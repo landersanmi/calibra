@@ -9,33 +9,45 @@ import pandas as pd
 import time
 from src.core.optimizer import Optimizer
 from src.core.utils import (
-    StoppingByNonDominance,
-    StoppingByTotalDominance,
-    StoppingByConstraintsMet,
-    StoppingByFullPareto,
     WriteObjectivesToFileObserver,
     ParetoTools,
     Evaluate,
 )
+from src.core.termination_criterions import (
+    StoppingByNonDominance,
+    StoppingByTotalDominance,
+    StoppingByConstraintsMet,
+    StoppingByFullPareto,
+)
+
+from src.core.constants import (
+    PIPELINE_FILENAME,
+    SOLUTION_DF_COLUMNAMES,
+    TIMES_FILENAME,
+    INFRASTRUCTURE_FILENAME,
+    NETWORK_INFRASTRUCTURE_FILENAME,
+    LATENCIES_FILENAME
+)
+
 from jmetal.util.termination_criterion import StoppingByEvaluations, StoppingByTime
-from tabulate import tabulate
 
 LOGGER = logging.getLogger("optimizer")
 
 
 def compete(file_infrastructure: str, file_net_infrastructure:str, file_latencies: str, pipeline: str):
-    file_pipeline = f"src/resources/pipeline_{pipeline}.yml"
-    # population_size = 180
+    file_pipeline = PIPELINE_FILENAME.format(pipeline=pipeline)
     population_size = 200
+
     with open(file_pipeline, "r") as input_data_file:
         input_pipeline = input_data_file.read()
+
     o = Optimizer(
         file_infrastructure=file_infrastructure,
         file_net_infrastructure=file_net_infrastructure,
         file_latencies=file_latencies,
         input_pipeline=input_pipeline,
-        #termination_criterion=StoppingByTime(max_seconds=600),
-        termination_criterion=StoppingByConstraintsMet(),
+        termination_criterion=StoppingByTime(max_seconds=120),
+        #termination_criterion=StoppingByConstraintsMet(),
         observer=WriteObjectivesToFileObserver(),
         population_size=population_size,
     )
@@ -45,25 +57,9 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, file_latencie
     for s in o.get_front():
         objectives.append(s.objectives + s.constraints)
 
-    columnames = [
-            #"Resilience",
-            "Model Perf",
-            "Cost",
-            "Network Perf",
-            "Net Cost",
-            "Net Fail Prob",
-            "cpu",
-            "ram",
-            "deploy",
-            #"privacy",
-            "net deployment",
-            "net device capacity",
-            "net traffic capacity",
-            "net layers"
-        ]
     df = pd.DataFrame(
         objectives,
-        columns=columnames,
+        columns=SOLUTION_DF_COLUMNAMES,
     )
 
     for i, col in enumerate(df.columns):
@@ -73,41 +69,17 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, file_latencie
 
     pt = ParetoTools(o.get_front())
     pt.save()
-    '''
-    print(
-        f"Goals.Resilience = {tabulate(df.sort_values(by=['Resilience']).head(1), headers='keys', tablefmt='psql')}"
-    )
-    print(
-        f"Goals.Model Performance = {tabulate(df.sort_values(by=['Model Perf']).head(1), headers='keys', tablefmt='psql')}"
-    )
-    print(
-        f"Goals.Cost = {tabulate(df.sort_values(by=['Cost']).head(1), headers='keys', tablefmt='psql')}"
-    )
-    print(
-        f"Goals.Network Performance = {tabulate(df.sort_values(by=['Network Perf']).head(1), headers='keys', tablefmt='psql')}"
-    )
-    print(
-        f"Goals.Network Cost = {tabulate(df.sort_values(by=['Net Cost']).head(1), headers='keys', tablefmt='psql')}"
-    )
-    print(
-        f"Goals.Network Fail Prob = {tabulate(df.sort_values(by=['Net Fail Prob']).head(1), headers='keys', tablefmt='psql')}"
-    )
-    '''
-
 
 def evaluate_solution(file_solution: str):
     e = Evaluate(file_solution=file_solution)
     print(f"Constraints.CPU = {e.constraint_cpu()}")
     print(f"Constraints.RAM = {e.constraint_ram()}")
-    print(f"Constraints.GPU = 0")
     print(f"Constraints.Deployment = {e.constraint_deployment()}")
-    print(f"Constraints.Privacy = {e.constraint_privacy()}")
     print(f"Constraints.Net Deployment = {e.constraint_net_deployment()}")
     print(f"Constraints.Net Device Capacity = {e.constraint_net_device_capacity()}")
     print(f"Constraints.Net Traffic Capacity = {e.constraint_net_traffic_capacity()}")
     print(f"Constraints.Net Layers = {e.constraint_net_layers()}")
 
-    print(f"Goals.Resilience = {e.resilience()}")
     print(f"Goals.Model Performance = {e.model_performance()}")
     print(f"Goals.Cost = {e.cost()}")
     print(f"Goals.Network Performance = {e.network_performance()}")
@@ -117,21 +89,15 @@ def evaluate_solution(file_solution: str):
 
 def generate_times(file_infrastructure, file_latencies):
     total_times = []
-    pipelines = [
-        #"pipeline_5.yml",
-        #"pipeline_10.yml",
-        #"pipeline_20.yml",
-        "pipeline_40.yml",
-        #"pipeline_80.yml",
-    ]
+    pipelines = [5, 10, 20, 40]
     for p in pipelines:
-        file_pipeline = f"src/resources/{p}"
+        file_pipeline = PIPELINE_FILENAME.format(pipeline=p)
         with open(file_pipeline, "r") as input_data_file:
             input_pipeline = input_data_file.read()
         population_size = 60
         pipe_time = []
         # do it 100 times
-        for i in range(2):
+        for i in range(100):
             start_time = time.time()
             LOGGER.info(f"Executing iteration {i} of {file_pipeline}.")
             Optimizer(
@@ -145,17 +111,15 @@ def generate_times(file_infrastructure, file_latencies):
             pipe_time.append(end_time - start_time)
         total_times.append(pipe_time)
 
-    filename = "tmp/times"
-    if os.path.exists(filename):
-        os.remove(filename)
-    with open(filename, "w") as out_file:
+    if os.path.exists(TIMES_FILENAME):
+        os.remove(TIMES_FILENAME)
+    with open(TIMES_FILENAME, "w") as out_file:
         writer = csv.writer(out_file)
         writer.writerows(total_times)
 
 
 def generate_pareto(file_infrastructure, file_latencies):
-    #file_pipeline = f"src/resources/pipeline_40.yml"
-    file_pipeline = f"src/resources/pipeline_80NETXS.yml"
+    file_pipeline = PIPELINE_FILENAME.format(pipeline=40)
     population_size = 100
     with open(file_pipeline, "r") as input_data_file:
         input_pipeline = input_data_file.read()
@@ -173,8 +137,7 @@ def generate_pareto(file_infrastructure, file_latencies):
 
 
 def generate_fitnesses(file_infrastructure, file_net_infrastructure, file_latencies):
-    #file_pipeline = f"src/resources/pipeline_20.yml"
-    file_pipeline = f"src/resources/pipeline_5NET.yml"
+    file_pipeline = PIPELINE_FILENAME.format(pipeline='40NET')
     population_size = 50
     with open(file_pipeline, "r") as input_data_file:
         input_pipeline = input_data_file.read()
@@ -193,7 +156,7 @@ def generate_fitnesses(file_infrastructure, file_net_infrastructure, file_latenc
 
 
 def generate_memory(file_infrastructure, file_latencies, number_of_models):
-    file_pipeline = f"src/resources/pipeline_{number_of_models}.yml"
+    file_pipeline = PIPELINE_FILENAME.format(pipeline=number_of_models)
     with open(file_pipeline, "r") as input_data_file:
         input_pipeline = input_data_file.read()
     Optimizer(
@@ -260,31 +223,27 @@ def main():
         level=logging.INFO, format="%(asctime)s %(levelname)-8s %(message)s"
     )
 
-    file_infrastructure = "src/resources/infrastructure.csv"
-    file_net_infrastructure = "src/resources/network_infrastructure.csv"
-    file_latencies = "src/resources/latencies.csv"
-
     if args.times:
         generate_times(
-            file_infrastructure=file_infrastructure, file_latencies=file_latencies
+            file_infrastructure=INFRASTRUCTURE_FILENAME, file_latencies=LATENCIES_FILENAME
         )
 
     if args.pareto:
         generate_pareto(
-            file_infrastructure=file_infrastructure, file_latencies=file_latencies
+            file_infrastructure=INFRASTRUCTURE_FILENAME, file_latencies=LATENCIES_FILENAME
         )
 
     if args.fitnesses:
         generate_fitnesses(
-            file_infrastructure=file_infrastructure,
-            file_net_infrastructure=file_net_infrastructure,
-            file_latencies=file_latencies
+            file_infrastructure=INFRASTRUCTURE_FILENAME,
+            file_net_infrastructure=NETWORK_INFRASTRUCTURE_FILENAME,
+            file_latencies=LATENCIES_FILENAME
         )
 
     if args.memory:
         generate_memory(
-            file_infrastructure=file_infrastructure,
-            file_latencies=file_latencies,
+            file_infrastructure=INFRASTRUCTURE_FILENAME,
+            file_latencies=LATENCIES_FILENAME,
             number_of_models=args.memory,
         )
 
@@ -293,9 +252,9 @@ def main():
 
     if args.compete:
         compete(
-            file_infrastructure=file_infrastructure,
-            file_net_infrastructure=file_net_infrastructure,
-            file_latencies=file_latencies,
+            file_infrastructure=INFRASTRUCTURE_FILENAME,
+            file_net_infrastructure=NETWORK_INFRASTRUCTURE_FILENAME,
+            file_latencies=LATENCIES_FILENAME,
             pipeline=args.compete,
         )
 
