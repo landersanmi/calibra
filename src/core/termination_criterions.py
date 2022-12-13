@@ -3,6 +3,8 @@ import logging
 import datetime
 import pandas as pd
 
+from src.core.constants import CONSTRAINT_LABELS
+
 from jmetal.util.comparator import DominanceComparator
 from jmetal.util.termination_criterion import TerminationCriterion
 
@@ -87,50 +89,28 @@ class StoppingByConstraintsMet(TerminationCriterion):
         seconds = kwargs["COMPUTING_TIME"]
         #evaluations = kwargs["EVALUATIONS"]
         c = np.array([s.constraints for s in kwargs["SOLUTIONS"]])
-        df = pd.DataFrame(
-            c,
-            columns=[
-                "cpu",
-                "ram",
-                "deploy",
-                #"privacy",
-                "net deployment",
-                "net device capacity",
-                "net traffic capacity",
-                "net layers"
-            ],
-        )
-        size = sum(
-            (
-                (df["cpu"] == 0)
-                & (df["ram"] == 0)
-                & (df["deploy"] == 0)
-                #& (df["privacy"] == 0)
-                & (df["net deployment"] == 0)
-                & (df["net device capacity"] == 0)
-                & (df["net traffic capacity"] == 0)
-                & (df["net layers"] == 0)
-            )
-        )
-        if size > 0:
+        df = pd.DataFrame(c, columns=CONSTRAINT_LABELS)
+
+        uncompleted_constraint = False
+        constraints_sizes = dict()
+        constraints_sizes['size total'] = len(df)
+        for constraint in CONSTRAINT_LABELS:
+            constraints_sizes['size ' + constraint] = sum(df[constraint] == 0)
+
+            if df[constraint].any() != 0:
+                uncompleted_constraint = True
+
+        if not uncompleted_constraint:
             self.constraints_met = True
 
-        size_cpu = sum(df["cpu"] == 0)
-        size_ram = sum(df["ram"] == 0)
-        size_deploy = sum(df["deploy"] == 0)
-        #size_privacy = sum(df["privacy"] == 0)
-        size_net_deploy = sum(df["net deployment"] == 0)
-        size_net_dev_capacity = sum(df["net device capacity"] == 0)
-        size_net_traffic_capacity = sum(df["net traffic capacity"] == 0)
-        size_net_layers = sum(df["net layers"] == 0)
-        size_total = len(df)
+        log_msg = str(datetime.timedelta(seconds=seconds)) + " || "
+        for size in constraints_sizes:
+            log_msg += (size + '=' + str(constraints_sizes[size]) + ' | ')
+        print(log_msg)
+        LOGGER.info(log_msg)
 
-        LOGGER.info(
-            f"{str(datetime.timedelta(seconds=seconds))} - total = {size_total}, cpu = {size_cpu}, ram = {size_ram}, deploy = {size_deploy}, net deploy = {size_net_deploy}, net dev capacity = {size_net_dev_capacity}, net traffic capacity = {size_net_traffic_capacity}, net layers = {size_net_layers}"
-        )
-
-        constraints = [size_cpu, size_ram, size_deploy, size_net_deploy, size_net_dev_capacity, size_net_traffic_capacity, size_net_layers]
-        self.tensorboard_logger.log_constraints(constraints=constraints, constraints_met=self.constraints_met, x_axis_value=self.generations)
+        del constraints_sizes['size total']
+        self.tensorboard_logger.log_constraints(constraints=constraints_sizes, constraints_met=self.constraints_met, x_axis_value=self.generations)
         self.generations += 1
 
     @property
@@ -152,55 +132,32 @@ class StoppingByGenerationsAfterConstraintsMet(TerminationCriterion):
         seconds = kwargs["COMPUTING_TIME"]
         #evaluations = kwargs["EVALUATIONS"]
         c = np.array([s.constraints for s in kwargs["SOLUTIONS"]])
-        df = pd.DataFrame(
-            c,
-            columns=[
-                "cpu",
-                "ram",
-                "deploy",
-                #"privacy",
-                "net deployment",
-                "net device capacity",
-                "net traffic capacity",
-                "net layers"
-            ],
-        )
-        size = sum(
-            (
-                (df["cpu"] == 0)
-                & (df["ram"] == 0)
-                & (df["deploy"] == 0)
-                #& (df["privacy"] == 0)
-                & (df["net deployment"] == 0)
-                & (df["net device capacity"] == 0)
-                & (df["net traffic capacity"] == 0)
-                & (df["net layers"] == 0)
-            )
-        )
-        if size > 0:
+        df = pd.DataFrame(c, columns=CONSTRAINT_LABELS)
+
+        uncompleted_constraint = False
+        constraints_sizes = dict()
+        constraints_sizes['size total'] = len(df)
+        for constraint in CONSTRAINT_LABELS:
+            constraints_sizes['size '+constraint] = sum(df[constraint] == 0)
+
+            if df[constraint].any() != 0:
+                uncompleted_constraint = True
+
+        if not uncompleted_constraint:
             self.constraints_met = True
 
-        size_cpu = sum(df["cpu"] == 0)
-        size_ram = sum(df["ram"] == 0)
-        size_deploy = sum(df["deploy"] == 0)
-        #size_privacy = sum(df["privacy"] == 0)
-        size_net_deploy = sum(df["net deployment"] == 0)
-        size_net_dev_capacity = sum(df["net device capacity"] == 0)
-        size_net_traffic_capacity = sum(df["net traffic capacity"] == 0)
-        size_net_layers = sum(df["net layers"] == 0)
-        size_total = len(df)
-
-
-        if not self.constraints_met:
-            LOGGER.info(
-                f"{str(datetime.timedelta(seconds=seconds))} - total = {size_total}, cpu = {size_cpu}, ram = {size_ram}, deploy = {size_deploy}, net deploy = {size_net_deploy}, net dev capacity = {size_net_dev_capacity}, net traffic capacity = {size_net_traffic_capacity}, net layers = {size_net_layers}"
-            )
-        else:
+        if self.constraints_met:
             self.generations_after_constraints += 1
             self.generations_met = (self.generations_after_constraints == self.generations)
+        else:
+            log_msg = str(datetime.timedelta(seconds=seconds)) + " || "
+            for size in constraints_sizes:
+                log_msg += (size + '=' + str(constraints_sizes[size]) + ' | ')
+            print(log_msg)
+            LOGGER.info(log_msg)
 
-        constraints = [size_cpu, size_ram, size_deploy, size_net_deploy, size_net_dev_capacity, size_net_traffic_capacity, size_net_layers]
-        self.tensorboard_logger.log_constraints(constraints=constraints, constraints_met=self.constraints_met, x_axis_value=self.all_generations)
+        del constraints_sizes['size total']
+        self.tensorboard_logger.log_constraints(constraints=constraints_sizes, constraints_met=self.constraints_met, x_axis_value=self.all_generations)
         self.all_generations += 1
 
     @property

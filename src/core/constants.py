@@ -10,11 +10,10 @@ CONTINENT_CODES = {
 
 PIPELINE_COLUMNS = ["cpus", "memory", "network", "country", "privacy_type", "continent", "link"]
 
-SOLUTION_DF_COLUMNAMES = ["Model Perf", "Cost", "Network Perf", "Net Cost", "Net Fail Prob",
-                          "cpu", "ram", "deploy", "net deployment", "net device capacity", "net traffic capacity", "net layers"]
+OBJECTIVES_LABELS = ["Model Perf", "Cost", "Network Perf", "Net Cost", "Net Fail Prob"]
+CONSTRAINT_LABELS = ["cpu", "ram", "deploy", "net deployment", "net device capacity", "net traffic capacity", "net layers"]
+SOLUTION_DF_COLUMNAMES = OBJECTIVES_LABELS + CONSTRAINT_LABELS
 
-#OBJECTIVES_LABELS = ['Resilience', 'Model Perf', 'Cost', 'Network Performance', 'Net Cost', 'Net Fail Prob']
-OBJECTIVES_LABELS = ['Model Perf', 'Cost', 'Network Perf', 'Net Cost', 'Net Fail Prob']
 
 PIPELINE_FILENAME = "src/resources/pipeline_{pipeline}.yml"
 INFRASTRUCTURE_FILENAME = "src/resources/infrastructure.csv"
