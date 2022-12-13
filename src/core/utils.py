@@ -21,6 +21,7 @@ from src.core.models.infrastructure import Infrastructure
 from src.core.models.network_infrastructure import NetworkInfrastructure
 from src.core.models.latencies import Latency
 
+
 LOGGER = logging.getLogger("jmetal")
 
 
@@ -55,6 +56,25 @@ class WriteObjectivesToFileObserver(Observer):
             for i in range(len(objectives)):
                 out_file.write(f"{abs(objectives[i])}")
                 out_file.write(",") if i != len(objectives)-1 else out_file.write(f"\n")
+
+class WriteObjectivesToTensorboardObserver(Observer):
+    def __init__(self, logger) -> None:
+        self.generations = 0
+        self.tensorboard_logger = logger
+
+    def update(self, *args, **kwargs):
+        evaluations = kwargs["EVALUATIONS"]
+        LOGGER.info(f"Evaluations: {evaluations}")
+
+        solutions = np.array([s.objectives for s in kwargs["SOLUTIONS"]])
+        objectives = []
+        for i in range(solutions.shape[1]):
+            objectives = np.append(objectives, solutions[np.argsort(solutions[:, i])][:5].mean(0)[i])
+
+        objectives = abs(objectives)
+        self.tensorboard_logger.log_objectives(objectives, self.generations)
+        self.generations += 1
+
 
 
 class Evaluate:

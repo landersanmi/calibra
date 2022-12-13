@@ -9,3 +9,4 @@ tests/resources/*
 .python-version
 tmp/data/*
 tmp/plots/*
+logs/*

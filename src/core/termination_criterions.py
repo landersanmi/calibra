@@ -77,13 +77,15 @@ class StoppingByTotalDominance(TerminationCriterion):
 
 
 class StoppingByConstraintsMet(TerminationCriterion):
-    def __init__(self):
+    def __init__(self, logger):
         super(StoppingByConstraintsMet, self).__init__()
         self.constraints_met = False
+        self.generations = 0
+        self.tensorboard_logger = logger
 
     def update(self, *args, **kwargs):
         seconds = kwargs["COMPUTING_TIME"]
-
+        #evaluations = kwargs["EVALUATIONS"]
         c = np.array([s.constraints for s in kwargs["SOLUTIONS"]])
         df = pd.DataFrame(
             c,
@@ -127,9 +129,83 @@ class StoppingByConstraintsMet(TerminationCriterion):
             f"{str(datetime.timedelta(seconds=seconds))} - total = {size_total}, cpu = {size_cpu}, ram = {size_ram}, deploy = {size_deploy}, net deploy = {size_net_deploy}, net dev capacity = {size_net_dev_capacity}, net traffic capacity = {size_net_traffic_capacity}, net layers = {size_net_layers}"
         )
 
+        constraints = [size_cpu, size_ram, size_deploy, size_net_deploy, size_net_dev_capacity, size_net_traffic_capacity, size_net_layers]
+        self.tensorboard_logger.log_constraints(constraints=constraints, constraints_met=self.constraints_met, x_axis_value=self.generations)
+        self.generations += 1
+
     @property
     def is_met(self):
         return self.constraints_met
+
+
+class StoppingByGenerationsAfterConstraintsMet(TerminationCriterion):
+    def __init__(self, generations, logger):
+        super(StoppingByGenerationsAfterConstraintsMet, self).__init__()
+        self.constraints_met = False
+        self.generations_met = False
+        self.generations = generations
+        self.generations_after_constraints = 0
+        self.all_generations = 0
+        self.tensorboard_logger = logger
+
+    def update(self, *args, **kwargs):
+        seconds = kwargs["COMPUTING_TIME"]
+        #evaluations = kwargs["EVALUATIONS"]
+        c = np.array([s.constraints for s in kwargs["SOLUTIONS"]])
+        df = pd.DataFrame(
+            c,
+            columns=[
+                "cpu",
+                "ram",
+                "deploy",
+                #"privacy",
+                "net deployment",
+                "net device capacity",
+                "net traffic capacity",
+                "net layers"
+            ],
+        )
+        size = sum(
+            (
+                (df["cpu"] == 0)
+                & (df["ram"] == 0)
+                & (df["deploy"] == 0)
+                #& (df["privacy"] == 0)
+                & (df["net deployment"] == 0)
+                & (df["net device capacity"] == 0)
+                & (df["net traffic capacity"] == 0)
+                & (df["net layers"] == 0)
+            )
+        )
+        if size > 0:
+            self.constraints_met = True
+
+        size_cpu = sum(df["cpu"] == 0)
+        size_ram = sum(df["ram"] == 0)
+        size_deploy = sum(df["deploy"] == 0)
+        #size_privacy = sum(df["privacy"] == 0)
+        size_net_deploy = sum(df["net deployment"] == 0)
+        size_net_dev_capacity = sum(df["net device capacity"] == 0)
+        size_net_traffic_capacity = sum(df["net traffic capacity"] == 0)
+        size_net_layers = sum(df["net layers"] == 0)
+        size_total = len(df)
+
+
+        if not self.constraints_met:
+            LOGGER.info(
+                f"{str(datetime.timedelta(seconds=seconds))} - total = {size_total}, cpu = {size_cpu}, ram = {size_ram}, deploy = {size_deploy}, net deploy = {size_net_deploy}, net dev capacity = {size_net_dev_capacity}, net traffic capacity = {size_net_traffic_capacity}, net layers = {size_net_layers}"
+            )
+        else:
+            self.generations_after_constraints += 1
+            self.generations_met = (self.generations_after_constraints == self.generations)
+
+        constraints = [size_cpu, size_ram, size_deploy, size_net_deploy, size_net_dev_capacity, size_net_traffic_capacity, size_net_layers]
+        self.tensorboard_logger.log_constraints(constraints=constraints, constraints_met=self.constraints_met, x_axis_value=self.all_generations)
+        self.all_generations += 1
+
+    @property
+    def is_met(self):
+        return self.constraints_met and self.generations_met
 
 
 class StoppingByFullPareto(TerminationCriterion):

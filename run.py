@@ -10,6 +10,7 @@ import time
 from src.core.optimizer import Optimizer
 from src.core.utils import (
     WriteObjectivesToFileObserver,
+    WriteObjectivesToTensorboardObserver,
     ParetoTools,
     Evaluate,
 )
@@ -18,6 +19,7 @@ from src.core.termination_criterions import (
     StoppingByTotalDominance,
     StoppingByConstraintsMet,
     StoppingByFullPareto,
+    StoppingByGenerationsAfterConstraintsMet,
 )
 
 from src.core.constants import (
@@ -28,6 +30,7 @@ from src.core.constants import (
     NETWORK_INFRASTRUCTURE_FILENAME,
     LATENCIES_FILENAME
 )
+from src.core.tensorboard_logger import TensorboardLogger
 
 from jmetal.util.termination_criterion import StoppingByEvaluations, StoppingByTime
 
@@ -40,15 +43,16 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, file_latencie
 
     with open(file_pipeline, "r") as input_data_file:
         input_pipeline = input_data_file.read()
-
+    tensorboard_logger = TensorboardLogger(algo_name=str(pipeline))
     o = Optimizer(
         file_infrastructure=file_infrastructure,
         file_net_infrastructure=file_net_infrastructure,
         file_latencies=file_latencies,
         input_pipeline=input_pipeline,
-        termination_criterion=StoppingByTime(max_seconds=120),
-        #termination_criterion=StoppingByConstraintsMet(),
-        observer=WriteObjectivesToFileObserver(),
+        #termination_criterion=StoppingByTime(max_seconds=120),
+        #termination_criterion=StoppingByConstraintsMet(tensorboard_logger),
+        termination_criterion=StoppingByGenerationsAfterConstraintsMet(generations=50, logger=tensorboard_logger),
+        observer=WriteObjectivesToTensorboardObserver(tensorboard_logger),
         population_size=population_size,
     )
     o.run()
