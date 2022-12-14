@@ -10,7 +10,7 @@ CONTINENT_CODES = {
 
 PIPELINE_COLUMNS = ["cpus", "memory", "network", "country", "privacy_type", "continent", "link"]
 
-OBJECTIVES_LABELS = ["Model Perf", "Cost", "Network Perf", "Net Cost", "Net Fail Prob"]
+OBJECTIVES_LABELS = ["Model Perf", "Cost", "Net Cost", "Net Fail Prob"]
 CONSTRAINT_LABELS = ["cpu", "ram", "deploy", "net deployment", "net device capacity", "net traffic capacity", "net layers"]
 SOLUTION_DF_COLUMNAMES = OBJECTIVES_LABELS + CONSTRAINT_LABELS
 
@@ -18,7 +18,6 @@ SOLUTION_DF_COLUMNAMES = OBJECTIVES_LABELS + CONSTRAINT_LABELS
 PIPELINE_FILENAME = "src/resources/pipeline_{pipeline}.yml"
 INFRASTRUCTURE_FILENAME = "src/resources/infrastructure.csv"
 NETWORK_INFRASTRUCTURE_FILENAME = "src/resources/network_infrastructure.csv"
-LATENCIES_FILENAME = "src/resources/latencies.csv"
 
 FITNESSES_FILENAME = "tmp/fitnesses"
 PARETO_FILENAME =  "tmp/pareto"

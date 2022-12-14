@@ -28,7 +28,6 @@ from src.core.constants import (
     TIMES_FILENAME,
     INFRASTRUCTURE_FILENAME,
     NETWORK_INFRASTRUCTURE_FILENAME,
-    LATENCIES_FILENAME
 )
 from src.core.tensorboard_logger import TensorboardLogger
 
@@ -37,7 +36,7 @@ from jmetal.util.termination_criterion import StoppingByEvaluations, StoppingByT
 LOGGER = logging.getLogger("optimizer")
 
 
-def compete(file_infrastructure: str, file_net_infrastructure:str, file_latencies: str, pipeline: str):
+def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str):
     file_pipeline = PIPELINE_FILENAME.format(pipeline=pipeline)
     population_size = 200
 
@@ -47,11 +46,10 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, file_latencie
     o = Optimizer(
         file_infrastructure=file_infrastructure,
         file_net_infrastructure=file_net_infrastructure,
-        file_latencies=file_latencies,
         input_pipeline=input_pipeline,
         #termination_criterion=StoppingByTime(max_seconds=120),
-        #termination_criterion=StoppingByConstraintsMet(tensorboard_logger),
-        termination_criterion=StoppingByGenerationsAfterConstraintsMet(generations=50, logger=tensorboard_logger),
+        termination_criterion=StoppingByConstraintsMet(tensorboard_logger),
+        #termination_criterion=StoppingByGenerationsAfterConstraintsMet(generations=50, logger=tensorboard_logger),
         observer=WriteObjectivesToTensorboardObserver(tensorboard_logger),
         population_size=population_size,
     )
@@ -91,7 +89,7 @@ def evaluate_solution(file_solution: str):
     print(f"Goals.Network Fail Probability = {e.network_fail_probability()}")
 
 
-def generate_times(file_infrastructure, file_latencies):
+def generate_times(file_infrastructure):
     total_times = []
     pipelines = [5, 10, 20, 40]
     for p in pipelines:
@@ -106,7 +104,6 @@ def generate_times(file_infrastructure, file_latencies):
             LOGGER.info(f"Executing iteration {i} of {file_pipeline}.")
             Optimizer(
                 file_infrastructure=file_infrastructure,
-                file_latencies=file_latencies,
                 input_pipeline=input_pipeline,
                 termination_criterion=StoppingByTotalDominance(idle_evaluations=20),
                 population_size=population_size,
@@ -122,14 +119,13 @@ def generate_times(file_infrastructure, file_latencies):
         writer.writerows(total_times)
 
 
-def generate_pareto(file_infrastructure, file_latencies):
+def generate_pareto(file_infrastructure):
     file_pipeline = PIPELINE_FILENAME.format(pipeline=40)
     population_size = 100
     with open(file_pipeline, "r") as input_data_file:
         input_pipeline = input_data_file.read()
     o = Optimizer(
         file_infrastructure=file_infrastructure,
-        file_latencies=file_latencies,
         input_pipeline=input_pipeline,
         # termination_criterion=StoppingByFullPareto(offspring_size=population_size),
         termination_criterion=StoppingByTime(max_seconds=600),
@@ -140,7 +136,7 @@ def generate_pareto(file_infrastructure, file_latencies):
     pt.save()
 
 
-def generate_fitnesses(file_infrastructure, file_net_infrastructure, file_latencies):
+def generate_fitnesses(file_infrastructure, file_net_infrastructure):
     file_pipeline = PIPELINE_FILENAME.format(pipeline='40NET')
     population_size = 50
     with open(file_pipeline, "r") as input_data_file:
@@ -148,7 +144,6 @@ def generate_fitnesses(file_infrastructure, file_net_infrastructure, file_latenc
     Optimizer(
         file_infrastructure=file_infrastructure,
         file_net_infrastructure=file_net_infrastructure,
-        file_latencies=file_latencies,
         input_pipeline=input_pipeline,
         # termination_criterion=StoppingByTotalDominance(idle_evaluations=100),
         termination_criterion=StoppingByEvaluations(
@@ -159,13 +154,12 @@ def generate_fitnesses(file_infrastructure, file_net_infrastructure, file_latenc
     ).run()
 
 
-def generate_memory(file_infrastructure, file_latencies, number_of_models):
+def generate_memory(file_infrastructure, number_of_models):
     file_pipeline = PIPELINE_FILENAME.format(pipeline=number_of_models)
     with open(file_pipeline, "r") as input_data_file:
         input_pipeline = input_data_file.read()
     Optimizer(
         file_infrastructure=file_infrastructure,
-        file_latencies=file_latencies,
         input_pipeline=input_pipeline,
         termination_criterion=StoppingByTime(max_seconds=30),
     ).run()
@@ -228,26 +222,21 @@ def main():
     )
 
     if args.times:
-        generate_times(
-            file_infrastructure=INFRASTRUCTURE_FILENAME, file_latencies=LATENCIES_FILENAME
-        )
+        generate_times(file_infrastructure=INFRASTRUCTURE_FILENAME)
 
     if args.pareto:
         generate_pareto(
-            file_infrastructure=INFRASTRUCTURE_FILENAME, file_latencies=LATENCIES_FILENAME
-        )
+            file_infrastructure=INFRASTRUCTURE_FILENAME)
 
     if args.fitnesses:
         generate_fitnesses(
             file_infrastructure=INFRASTRUCTURE_FILENAME,
             file_net_infrastructure=NETWORK_INFRASTRUCTURE_FILENAME,
-            file_latencies=LATENCIES_FILENAME
         )
 
     if args.memory:
         generate_memory(
             file_infrastructure=INFRASTRUCTURE_FILENAME,
-            file_latencies=LATENCIES_FILENAME,
             number_of_models=args.memory,
         )
 
@@ -258,7 +247,6 @@ def main():
         compete(
             file_infrastructure=INFRASTRUCTURE_FILENAME,
             file_net_infrastructure=NETWORK_INFRASTRUCTURE_FILENAME,
-            file_latencies=LATENCIES_FILENAME,
             pipeline=args.compete,
         )
 

@@ -13,13 +13,11 @@ from src.core.constants import (
     INFRASTRUCTURE_FILENAME,
     NETWORK_INFRASTRUCTURE_FILENAME,
     PIPELINE_FILENAME,
-    LATENCIES_FILENAME
 )
 
 from src.core.models.pipeline import Pipeline
 from src.core.models.infrastructure import Infrastructure
 from src.core.models.network_infrastructure import NetworkInfrastructure
-from src.core.models.latencies import Latency
 
 
 LOGGER = logging.getLogger("jmetal")
@@ -111,15 +109,6 @@ class Evaluate:
         model_performance = Objectives().get_performance(self.pipe, self.infra, self.solution)
         return model_performance
 
-    def resilience(self) -> float:
-        resilience = Objectives().get_resilience(self.infra, self.solution)
-        return resilience
-
-    def network_performance(self) -> float:
-        ld = Latency(LATENCIES_FILENAME).load()
-        network_performance = Objectives().get_network_performance(ld, self.pipe, self.infra, self.solution)
-        return network_performance
-
     def network_cost(self) -> float:
         network_cost = Objectives().get_net_cost(self.net_infra, self.solution)
         return network_cost
@@ -127,9 +116,6 @@ class Evaluate:
     def network_fail_probability(self) -> float:
         fail_probability = Objectives().get_net_fail_probability(self.net_infra, self.solution)
         return fail_probability
-
-    def constraint_privacy(self) -> bool:
-        return self.c.privacy_constraint()
 
     def constraint_cpu(self) -> bool:
         return self.c.cpu_constraint()

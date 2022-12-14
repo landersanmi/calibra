@@ -52,9 +52,7 @@ class StoppingByTotalDominance(TerminationCriterion):
         objective1 = s[np.argsort(s[:, 1])][0][1]
         objective2 = s[np.argsort(s[:, 2])][0][2]
         objective3 = s[np.argsort(s[:, 3])][0][3]
-        objective4 = s[np.argsort(s[:, 4])][0][4]
-        objective5 = s[np.argsort(s[:, 5])][0][5]
-        current_objectives = [objective0, objective1, objective2, objective3, objective4, objective5]
+        current_objectives = [objective0, objective1, objective2, objective3]
 
         s = kwargs["SOLUTIONS"][0]
         if self.best_objectives is None:

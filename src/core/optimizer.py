@@ -27,7 +27,6 @@ class Optimizer:
         termination_criterion,
         file_infrastructure,
         file_net_infrastructure,
-        file_latencies,
         input_pipeline,
         population_size=100,
         observer=None,
@@ -35,7 +34,6 @@ class Optimizer:
         self.termination_criterion = termination_criterion
         self.file_infrastructure = file_infrastructure
         self.file_net_infrastructure = file_net_infrastructure
-        self.file_latencies = file_latencies
         self.input_pipeline = input_pipeline
         self.observer = observer
         self.population_size = population_size
@@ -44,7 +42,6 @@ class Optimizer:
         self.problem = TravelingModel(
             file_infrastructure=self.file_infrastructure,
             file_network_infrastructure=self.file_net_infrastructure,
-            file_latencies=self.file_latencies,
             input_pipeline=self.input_pipeline,
         )
 
