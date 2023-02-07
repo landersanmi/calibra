@@ -7,6 +7,14 @@ import logging
 import os
 import pandas as pd
 import time
+import numpy as np
+import sys
+
+
+from src.core.models.infrastructure import Infrastructure
+import matplotlib.pyplot as plt
+
+from src.core.models.network_infrastructure import NetworkInfrastructure
 from src.core.optimizer import Optimizer
 from src.core.utils import (
     WriteObjectivesToFileObserver,
@@ -49,25 +57,73 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
         input_pipeline=input_pipeline,
         #termination_criterion=StoppingByTime(max_seconds=120),
         termination_criterion=StoppingByConstraintsMet(tensorboard_logger),
-        #termination_criterion=StoppingByGenerationsAfterConstraintsMet(generations=50, logger=tensorboard_logger),
+        #termination_criterion=StoppingByGenerationsAfterConstraintsMet(generations= 200, logger=tensorboard_logger),
         observer=WriteObjectivesToTensorboardObserver(tensorboard_logger),
         population_size=population_size,
     )
     o.run()
 
-    objectives = []
+    objectives, device_solutions, net_solutions = [], [], []
     for s in o.get_front():
         objectives.append(s.objectives + s.constraints)
+        device_solutions.append(s.variables[0].variables)
+        net_solutions.append(s.variables[1].variables)
 
     df = pd.DataFrame(
         objectives,
         columns=SOLUTION_DF_COLUMNAMES,
     )
 
+    best_solutions = []
     for i, col in enumerate(df.columns):
         if i < o.problem.number_of_objectives:
             print("--------Goals."+col+"---------")
             print(df.sort_values(by=[col]).head(1))
+            best_solutions = np.append(best_solutions, df.sort_values(by=[col]).head(1).index)
+    
+    for index in best_solutions:
+        device_names = Infrastructure(file_infrastructure).load().hostname.to_numpy()
+        device_solution_df = pd.DataFrame(device_solutions[int(index)], columns=device_names)
+        net_device_names = NetworkInfrastructure(file_net_infrastructure).load().id.to_numpy()
+        net_solution_df = pd.DataFrame(net_solutions[int(index)], columns=device_names)
+
+        device_matrix = np.array(device_solution_df[device_names].values, dtype=float).T
+        net_matrix = np.array(net_solution_df[device_names].values, dtype=float).T
+        models_indexes = device_solution_df.index
+
+        fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(16,9), dpi=90, gridspec_kw={'width_ratios': [len(models_indexes), len(net_device_names)]})
+
+        ax[0].imshow(device_matrix, cmap='GnBu', interpolation='nearest')
+        plt.sca(ax[0])
+        plt.yticks(range(device_matrix.shape[0]), device_names)
+        plt.xticks(range(device_matrix.shape[1]), models_indexes)
+        plt.xticks(rotation=30)
+        plt.xlabel('Infra devices')
+        plt.xlabel('Pipeline Models')
+        plt.title("Device Solution")
+
+        # place '0' or '1' values centered in the individual squares
+        for x in range(device_matrix.shape[0]):
+            for y in range(device_matrix.shape[1]):
+                ax[0].annotate(str(device_matrix[x, y])[0], xy=(y, x),
+                            horizontalalignment='center', verticalalignment='center')
+
+        ax[1].imshow(net_matrix, cmap='GnBu', interpolation='nearest')
+        plt.sca(ax[1])
+        plt.yticks(range(net_matrix.shape[0]), device_names)
+        plt.xticks(range(net_matrix.shape[1]), net_device_names, fontsize=7)
+        plt.xticks(rotation=30)
+        plt.xlabel('Infra devices')
+        plt.xlabel('Network Devices')
+        plt.title("Network Solution")
+
+        # place '0' or '1' values centered in the individual squares
+        for x in range(net_matrix.shape[0]):
+            for y in range(net_matrix.shape[1]):
+                ax[1].annotate(str(net_matrix[x, y])[0], xy=(y, x),
+                         horizontalalignment='center', verticalalignment='center')
+        plt.show()
+
 
     pt = ParetoTools(o.get_front())
     pt.save()
@@ -84,37 +140,42 @@ def evaluate_solution(file_solution: str):
 
     print(f"Goals.Model Performance = {e.model_performance()}")
     print(f"Goals.Cost = {e.cost()}")
-    print(f"Goals.Network Performance = {e.network_performance()}")
     print(f"Goals.Network Cost = {e.network_cost()}")
     print(f"Goals.Network Fail Probability = {e.network_fail_probability()}")
 
 
-def generate_times(file_infrastructure):
+def generate_times(file_infrastructure: str, file_net_infrastructure:str):
     total_times = []
-    pipelines = [5, 10, 20, 40]
+    pipelines = ['5NET', '10NET', '20NET']
     for p in pipelines:
         file_pipeline = PIPELINE_FILENAME.format(pipeline=p)
         with open(file_pipeline, "r") as input_data_file:
             input_pipeline = input_data_file.read()
-        population_size = 60
+        
+        population_size = 200
         pipe_time = []
-        # do it 100 times
+        pipe_time.append(p)
+        
         for i in range(100):
+            tensorboard_logger = TensorboardLogger(algo_name=str(p) + '[' + str(i) + ']')
             start_time = time.time()
             LOGGER.info(f"Executing iteration {i} of {file_pipeline}.")
             Optimizer(
                 file_infrastructure=file_infrastructure,
+                file_net_infrastructure=file_net_infrastructure,
                 input_pipeline=input_pipeline,
-                termination_criterion=StoppingByTotalDominance(idle_evaluations=20),
+                termination_criterion=StoppingByConstraintsMet(tensorboard_logger),
+                observer=WriteObjectivesToTensorboardObserver(tensorboard_logger),
                 population_size=population_size,
             ).run()
             end_time = time.time()
             pipe_time.append(end_time - start_time)
         total_times.append(pipe_time)
 
+    print(total_times)
     if os.path.exists(TIMES_FILENAME):
         os.remove(TIMES_FILENAME)
-    with open(TIMES_FILENAME, "w") as out_file:
+    with open(TIMES_FILENAME, "w", newline='') as out_file:
         writer = csv.writer(out_file)
         writer.writerows(total_times)
 
@@ -222,7 +283,9 @@ def main():
     )
 
     if args.times:
-        generate_times(file_infrastructure=INFRASTRUCTURE_FILENAME)
+        generate_times(file_infrastructure=INFRASTRUCTURE_FILENAME,
+                       file_net_infrastructure=NETWORK_INFRASTRUCTURE_FILENAME
+        )
 
     if args.pareto:
         generate_pareto(

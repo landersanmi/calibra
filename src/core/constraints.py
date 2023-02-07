@@ -2,43 +2,13 @@ import numpy as np
 
 
 class Constraints:
+
     def __init__(self, solution, infra, net_infra,  pipe):
         self.model_solution = np.asfarray(solution.variables[0].variables, dtype=np.bool)
         self.network_solution = np.asfarray(solution.variables[1].variables, dtype=np.bool)
         self.infra = infra
         self.net_infra = net_infra
         self.pipe = pipe
-
-    def __privacy(self, location, type):
-        # the location of the devices
-        location_devices = self.infra[location].to_numpy()
-        # the location of the models
-        location_models = self.pipe[location].to_numpy()
-
-        # the location of the devices for the given solution
-        sol_loc_dev = self.model_solution * location_devices
-        # the location of the models for the given solution
-        sol_loc_mod = self.model_solution * location_models[np.newaxis].T
-
-        # models with privacy type equals to {type}
-        privacy_mask = np.where(self.pipe.privacy_type.to_numpy() == type, 1, 0)[
-            np.newaxis
-        ].T
-
-        # apply the mask for the given type
-        device_matrix = sol_loc_dev * privacy_mask
-        model_matrix = sol_loc_mod * privacy_mask
-
-        # returns true if both matrixes are equal
-        check_matrix = device_matrix == model_matrix
-        false_count = np.size(check_matrix) - np.sum(check_matrix)
-        # return (device_matrix == model_matrix).all()
-        return false_count
-
-    def privacy_constraint(self):
-        privacy_count = self.__privacy("country", 2) + self.__privacy("continent", 1)
-        # return 0
-        return -1 * privacy_count
 
     def cpu_constraint(self):
         x = self.model_solution.transpose() * self.pipe.cpus.to_numpy()
@@ -60,6 +30,20 @@ class Constraints:
         # return 0 if not (memory < sum_rows).any() else -1
         c = [i if i > 0 else 0 for i in sum_rows / memory]
         return 0 if not (memory < sum_rows).any() else -1 * np.sum(c)
+
+    def bandwidth_constraint(self):
+        models_net_requirements = self.pipe.network.to_numpy()
+        models_net_requirements = np.tile(models_net_requirements, (self.model_solution.shape[1], 1))
+        models_net_requirements = models_net_requirements*self.model_solution.transpose()
+
+        devices_net_requirements = np.sum(models_net_requirements, axis=1)
+        bandwitdth_per_device = self.infra.bandwidth.to_numpy()
+
+        result=0
+        for required, bandwidth in zip(devices_net_requirements, bandwitdth_per_device):
+            if required > bandwidth:
+                result -= (required - bandwidth)
+        return result
 
     def net_deployment_constraint(self):
         models_per_device = np.sum(self.model_solution.transpose(), axis=1)
@@ -93,9 +77,9 @@ class Constraints:
         max_traffic_per_net = self.net_infra.max_network_traffic.to_numpy()
 
         result=0
-        for required, max in zip(requirements_per_net, max_traffic_per_net):
-            if required > max:
-                result -= (required-max)
+        for required, max_traffic in zip(requirements_per_net, max_traffic_per_net):
+            if required > max_traffic:
+                result -= (required - max_traffic)
         return result
 
     def net_layers_constraint(self):

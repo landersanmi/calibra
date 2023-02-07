@@ -30,7 +30,7 @@ class TravelingModel(BinaryProblem):
         self.number_of_objectives = len(OBJECTIVES_LABELS)
         self.number_of_devices = len(self.infra.index)
         self.number_of_net_devices = len(self.net_infra.index)
-        self.number_of_constraints = 7
+        self.number_of_constraints = 8
 
     def evaluate(self, solution: CompositeSolution) -> CompositeSolution:
         self.objectives = Objectives()
@@ -70,6 +70,11 @@ class TravelingModel(BinaryProblem):
         """
         constraints.append(c.deployment_constraint())
 
+        """
+        the bandwith of each device must not be exceeded by the 
+        sum of models network requirements deployed on it
+        """
+        constraints.append(c.bandwidth_constraint())
         """
         each device with at least one model deployed 
         should be connected to one network device.

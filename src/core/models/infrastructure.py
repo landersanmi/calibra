@@ -32,9 +32,9 @@ class Infrastructure:
         self.infrastructure["continent"] = self.infrastructure.apply(z, axis=1)
 
         # normalize bandwidth
-        self.infrastructure.bandwidth = (
-            self.infrastructure.bandwidth / self.infrastructure.bandwidth.max()
-        )
+        #self.infrastructure.bandwidth = (
+            #self.infrastructure.bandwidth / self.infrastructure.bandwidth.max()
+        #)
 
         # normalize performance
         self.infrastructure.performance = (

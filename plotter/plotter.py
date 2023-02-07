@@ -55,8 +55,8 @@ def pareto2():
 
 def fitness(objective: int, filename: str):
     # plt.close("all")
-    LABELS = ["Resilience", "Model Performance", "Cost", "Network Performance", "Network Cost", "Network Failure Probability"]
-    COLORS = ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#9b19f5", "#ffa300"]
+    LABELS = ["Model Performance", "Cost", "Network Cost", "Network Failure Probability"]
+    COLORS = ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3"]
 
     file = f"tmp/data/fitnesses/fitnesses[{filename}]"
     if not os.path.isfile(file):
@@ -69,8 +69,8 @@ def fitness(objective: int, filename: str):
     # color = ["red", "green", "blue", "yellow"]
     #color = ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#9b19f5", "#ffa300"]
 
-    ylabel = LABELS[-2:]
-    color = COLORS[-2:]
+    ylabel = LABELS[:]
+    color = COLORS[:]
 
 
     plt.figure()
@@ -229,7 +229,9 @@ def memory():
 
 
 def get_single_color(data, i: int, j: int, x: float, y: float):
-    colors = ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3"]
+    #colors = ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3"]
+    colors = ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#9b19f5", "#ffa300"]
+
     cm = LinearSegmentedColormap.from_list("", [colors[i], colors[j]])
 
     if i == j:
@@ -258,9 +260,7 @@ def get_colors(data, i: int, j: int):
 
 
 def pareto(filename: str):
-    LABELS = ["Resilience", "Model Performance", "Cost", "Network Performance", "Network Cost", "Network Failure Probability"]
-    labels = LABELS[-2:]
-
+    OBJECTIVES_LABELS = ["Model Perf", "Cost", "Net Cost", "Net Fail Prob"]
     file = f"tmp/data/paretos/pareto[{filename}]"
     if not os.path.isfile(file):
         logging.error(f"There is no {file} file.")
@@ -281,9 +281,9 @@ def pareto(filename: str):
             axis[i, j].set_xticklabels([])
             axis[i, j].set_yticklabels([])
             if j == 0:
-                axis[i, j].set_ylabel(labels[i])
+                axis[i, j].set_ylabel(OBJECTIVES_LABELS[i])
             if i == num_objectives-1:
-                axis[i, j].set_xlabel(labels[j])
+                axis[i, j].set_xlabel(OBJECTIVES_LABELS[j])
 
     plt.tight_layout()
     # Combine all the operations and display
@@ -335,7 +335,7 @@ def main():
     args = parser.parse_args()
 
     if args.fitnesses:
-        for o in range(2):
+        for o in range(5):
             fitness(objective=o, filename=args.fitnesses)
 
     if args.pareto:
