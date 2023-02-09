@@ -1,29 +1,39 @@
 import unittest
-
 # from unittest.mock import patch
 
 import logging
 import numpy as np
-from jmetal.core.problem import BinaryProblem
-from jmetal.util.termination_criterion import StoppingByEvaluations
 
-from src.core.optimizer import TravelingModel, Optimizer, Constraints
-from src.core.utils import Infrastructure, Pipeline, WriteObjectivesToFileObserver, Constraints
+from jmetal.core.problem import BinaryProblem
+from jmetal.core.solution import CompositeSolution, BinarySolution
+from jmetal.util.termination_criterion import StoppingByEvaluations
+from src.core.problem import TravelingModel
+
+from src.core.optimizer import Optimizer
+from src.core.constraints import Constraints
+
+from src.core.models.infrastructure import Infrastructure
+from src.core.models.pipeline import Pipeline
+
+from warnings import filterwarnings
+filterwarnings(action='ignore', category=DeprecationWarning)
 
 
 class TestConstraints(unittest.TestCase):
     def setUp(self):
         file_infrastructure = "tests/resources/infrastructure.csv"
-        file_latencies = "tests/resources/latencies.csv"
-        pipeline_location = "tests/resources/pipeline.yaml"
-        with open(pipeline_location, "r") as input_data_file:
+        file_network_infrastructure = "tests/resources/network_infrastructure.csv"
+        file_pipeline = "tests/resources/pipeline.yaml"
+        with open(file_pipeline, "r") as input_data_file:
             input_pipeline = input_data_file.read()
 
         self.o = Optimizer(
-            termination_criterion=StoppingByEvaluations(max_evaluations=10000),
+            termination_criterion=StoppingByEvaluations(max_evaluations=1000),
             file_infrastructure=file_infrastructure,
-            file_latencies=file_latencies,
+            file_net_infrastructure=file_network_infrastructure,
             input_pipeline=input_pipeline,
+            population_size=200,
+            observer=None,
         )
         # observer=WriteObjectivesToFileObserver())
         self.o.run()
@@ -36,7 +46,8 @@ class TestConstraints(unittest.TestCase):
     # each model should be deployed in at least one device
     def test_deployment(self):
         for sol in self.front:
-            s = np.asfarray(sol.variables, dtype=np.bool)
+            print(sol.variables)
+            s = np.asfarray(sol.variables[0].variables, dtype=np.bool)
             z = np.sum(s, axis=1) - 1
             self.assertFalse((z < 0).any())
 

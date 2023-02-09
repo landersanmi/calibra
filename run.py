@@ -146,7 +146,7 @@ def evaluate_solution(file_solution: str):
 
 def generate_times(file_infrastructure: str, file_net_infrastructure:str):
     total_times = []
-    pipelines = ['5NET', '10NET', '20NET']
+    pipelines = ['5NET', '5NETXL', '10NET', '10NETXL']
     for p in pipelines:
         file_pipeline = PIPELINE_FILENAME.format(pipeline=p)
         with open(file_pipeline, "r") as input_data_file:
@@ -156,7 +156,7 @@ def generate_times(file_infrastructure: str, file_net_infrastructure:str):
         pipe_time = []
         pipe_time.append(p)
         
-        for i in range(100):
+        for i in range(5):
             tensorboard_logger = TensorboardLogger(algo_name=str(p) + '[' + str(i) + ']')
             start_time = time.time()
             LOGGER.info(f"Executing iteration {i} of {file_pipeline}.")

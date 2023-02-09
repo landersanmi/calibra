@@ -12,7 +12,7 @@ class Objectives:
         self, pipe: Pipeline, infra: Infrastructure, solution: CompositeSolution
     ) -> int:
         solution = solution.variables[0]
-        s = np.asfarray(solution.variables, dtype=np.bool)
+        s = np.asfarray(solution.variables, dtype=bool)
 
         threads_required = s.transpose().dot(pipe.cpus.to_numpy()).astype(int)
 
@@ -27,7 +27,7 @@ class Objectives:
         self, pipe: Pipeline, infra: Infrastructure, solution: CompositeSolution
     ) -> int:
         solution = solution.variables[0]
-        s = np.asfarray(solution.variables, dtype=np.bool)
+        s = np.asfarray(solution.variables, dtype=bool)
 
         base_performance = s * infra.performance.to_numpy()
 
@@ -49,7 +49,7 @@ class Objectives:
             net_infra: NetworkInfrastructure,
             solution: CompositeSolution,
     ) -> int:
-        solution = np.asfarray(solution.variables[1].variables, dtype=np.bool)
+        solution = np.asfarray(solution.variables[1].variables, dtype=bool)
         deployed_net_devices = np.sum(solution, axis=1)
         deployed_net_devices = np.where(deployed_net_devices >= 1, 1, 0)
         cost_per_net_device = net_infra.cost.to_numpy()
@@ -61,7 +61,7 @@ class Objectives:
             net_infra: NetworkInfrastructure,
             solution: CompositeSolution,
     ) -> int:
-        solution = np.asfarray(solution.variables[1].variables, dtype=np.bool)
+        solution = np.asfarray(solution.variables[1].variables, dtype=bool)
         deployed_net_devices = np.sum(solution, axis=1)
         deployed_net_devices = np.where(deployed_net_devices >= 1, 1, 0)
         failure_per_net_device = net_infra.failure_prob.to_numpy()

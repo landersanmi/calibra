@@ -4,8 +4,8 @@ import numpy as np
 class Constraints:
 
     def __init__(self, solution, infra, net_infra,  pipe):
-        self.model_solution = np.asfarray(solution.variables[0].variables, dtype=np.bool)
-        self.network_solution = np.asfarray(solution.variables[1].variables, dtype=np.bool)
+        self.model_solution = np.asfarray(solution.variables[0].variables, dtype=bool)
+        self.network_solution = np.asfarray(solution.variables[1].variables, dtype=bool)
         self.infra = infra
         self.net_infra = net_infra
         self.pipe = pipe

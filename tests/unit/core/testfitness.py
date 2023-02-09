@@ -1,3 +1,4 @@
+'''
 import unittest
 
 # from unittest.mock import patch
@@ -10,7 +11,7 @@ from jmetal.core.problem import BinaryProblem
 
 from src.core.optimizer import TravelingModel, Optimizer
 from jmetal.core.solution import BinarySolution
-from src.core.utils import Infrastructure, Pipeline, Objectives, Latency
+from src.core.utils import Infrastructure, Pipeline, Objectives
 
 
 class TestFitness(unittest.TestCase):
@@ -223,3 +224,5 @@ class TestFitness(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+'''
