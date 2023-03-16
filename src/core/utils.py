@@ -55,6 +55,7 @@ class WriteObjectivesToFileObserver(Observer):
                 out_file.write(f"{abs(objectives[i])}")
                 out_file.write(",") if i != len(objectives)-1 else out_file.write(f"\n")
 
+
 class WriteObjectivesToTensorboardObserver(Observer):
     def __init__(self, logger) -> None:
         self.generations = 0
@@ -72,7 +73,6 @@ class WriteObjectivesToTensorboardObserver(Observer):
         objectives = abs(objectives)
         self.tensorboard_logger.log_objectives(objectives, self.generations)
         self.generations += 1
-
 
 
 class Evaluate:

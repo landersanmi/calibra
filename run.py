@@ -32,7 +32,7 @@ from src.core.termination_criterions import (
 
 from src.core.constants import (
     PIPELINE_FILENAME,
-    SOLUTION_DF_COLUMNAMES,
+    SOLUTION_DF_COLUMNS,
     TIMES_FILENAME,
     INFRASTRUCTURE_FILENAME,
     NETWORK_INFRASTRUCTURE_FILENAME,
@@ -40,6 +40,7 @@ from src.core.constants import (
 from src.core.tensorboard_logger import TensorboardLogger
 
 from jmetal.util.termination_criterion import StoppingByEvaluations, StoppingByTime
+from jmetal.util.comparator import StrengthAndKNNDistanceComparator, RankingAndCrowdingDistanceComparator
 
 LOGGER = logging.getLogger("optimizer")
 
@@ -56,10 +57,12 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
         file_net_infrastructure=file_net_infrastructure,
         input_pipeline=input_pipeline,
         #termination_criterion=StoppingByTime(max_seconds=120),
-        termination_criterion=StoppingByConstraintsMet(tensorboard_logger),
-        #termination_criterion=StoppingByGenerationsAfterConstraintsMet(generations= 200, logger=tensorboard_logger),
+        #termination_criterion=StoppingByConstraintsMet(tensorboard_logger),
+        termination_criterion=StoppingByGenerationsAfterConstraintsMet(generations=100, logger=tensorboard_logger),
         observer=WriteObjectivesToTensorboardObserver(tensorboard_logger),
         population_size=population_size,
+        #dominance_comparator=StrengthAndKNNDistanceComparator(),
+        #dominance_comparator=RankingAndCrowdingDistanceComparator(),
     )
     o.run()
 
@@ -69,9 +72,13 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
         device_solutions.append(s.variables[0].variables)
         net_solutions.append(s.variables[1].variables)
 
+    print("Solution Attributes:")
+    for solution in o.get_front():
+        print(solution.objectives)
+
     df = pd.DataFrame(
         objectives,
-        columns=SOLUTION_DF_COLUMNAMES,
+        columns=SOLUTION_DF_COLUMNS,
     )
 
     best_solutions = []

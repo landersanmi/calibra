@@ -14,7 +14,6 @@ class Constraints:
         x = self.model_solution.transpose() * self.pipe.cpus.to_numpy()
         sum_rows = np.sum(x, axis=1)
         thread_count = self.infra.thread_count.to_numpy()
-        # return 0 if not (thread_count < sum_rows).any() else -1
         c = [i if i > 1 else 0 for i in sum_rows / thread_count]
         return 0 if not (thread_count <= sum_rows).any() else -1 * np.sum(c)
 
@@ -27,7 +26,6 @@ class Constraints:
         x = self.model_solution.transpose() * self.pipe.memory.to_numpy()
         sum_rows = np.sum(x, axis=1)
         memory = self.infra.memory.to_numpy()
-        # return 0 if not (memory < sum_rows).any() else -1
         c = [i if i > 0 else 0 for i in sum_rows / memory]
         return 0 if not (memory < sum_rows).any() else -1 * np.sum(c)
 
@@ -37,10 +35,10 @@ class Constraints:
         models_net_requirements = models_net_requirements*self.model_solution.transpose()
 
         devices_net_requirements = np.sum(models_net_requirements, axis=1)
-        bandwitdth_per_device = self.infra.bandwidth.to_numpy()
+        bandwidth_per_device = self.infra.bandwidth.to_numpy()
 
-        result=0
-        for required, bandwidth in zip(devices_net_requirements, bandwitdth_per_device):
+        result = 0
+        for required, bandwidth in zip(devices_net_requirements, bandwidth_per_device):
             if required > bandwidth:
                 result -= (required - bandwidth)
         return result
@@ -52,13 +50,13 @@ class Constraints:
         result = 0
         for i, j in zip(deployed_devices, net_devices_per_device):
             if i != j:
-                result-= abs(j-i)
+                result -= abs(j-i)
         return result
 
     def net_device_capacity_constraint(self):
         devices_per_net_device = np.sum(self.network_solution, axis=1)
         net_devices_capacities = self.net_infra.max_devices.to_numpy()
-        result=0
+        result = 0
         for i, dev in enumerate(devices_per_net_device):
             if dev > net_devices_capacities[i]:
                 result -= (dev - net_devices_capacities[i])
@@ -76,7 +74,7 @@ class Constraints:
         requirements_per_net = np.sum(total_traffic_per_net_device, axis=1)
         max_traffic_per_net = self.net_infra.max_network_traffic.to_numpy()
 
-        result=0
+        result = 0
         for required, max_traffic in zip(requirements_per_net, max_traffic_per_net):
             if required > max_traffic:
                 result -= (required - max_traffic)
@@ -85,13 +83,12 @@ class Constraints:
     def net_layers_constraint(self):
         net_layers = self.net_infra.layer.to_numpy()
         device_layers = self.infra.cloud_type.to_numpy()
-        device_layers[device_layers =='aws'] = 'cloud'
-        device_layers[device_layers =='premises'] = 'cloud'
+        device_layers[device_layers == 'aws'] = 'cloud'
+        device_layers[device_layers == 'premises'] = 'cloud'
 
         result = 0
         for i, row in enumerate(self.network_solution):
             for j, deployed in enumerate(row):
                 if deployed and device_layers[j] != net_layers[i]:
                     result -= 1
-
         return result

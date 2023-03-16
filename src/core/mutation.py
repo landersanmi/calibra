@@ -1,6 +1,5 @@
 import random
 import numpy as np
-import math
 from jmetal.core.operator import Mutation
 from jmetal.core.solution import CompositeSolution
 from jmetal.util.ckecking import Check

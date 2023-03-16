@@ -2,7 +2,6 @@ import logging
 import numpy as np
 import random
 
-
 from src.core.objectives import Objectives
 from src.core.constraints import Constraints
 
@@ -24,6 +23,7 @@ class TravelingModel(BinaryProblem):
         self.net_infra = NetworkInfrastructure(file_network_infrastructure).load()
         self.pipe = Pipeline(input_pipeline).load()
 
+        self.objectives = None
         self.obj_labels = OBJECTIVES_LABELS
 
         self.number_of_models = self.pipe.shape[0]
@@ -71,7 +71,7 @@ class TravelingModel(BinaryProblem):
         constraints.append(c.deployment_constraint())
 
         """
-        the bandwith of each device must not be exceeded by the 
+        the bandwidth of each device must not be exceeded by the 
         sum of models network requirements deployed on it
         """
         constraints.append(c.bandwidth_constraint())
@@ -103,8 +103,8 @@ class TravelingModel(BinaryProblem):
                                         number_of_constraints=self.number_of_constraints,
                                         number_of_variables=self.number_of_models)
         network_solution = BinarySolution(number_of_objectives=self.number_of_objectives,
-                                        number_of_constraints=self.number_of_constraints,
-                                        number_of_variables=self.number_of_net_devices)
+                                          number_of_constraints=self.number_of_constraints,
+                                          number_of_variables=self.number_of_net_devices)
 
         for i in range(self.number_of_models):
             model_solution.variables[i] = [

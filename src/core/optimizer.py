@@ -1,16 +1,6 @@
-#!/usr/bin/python3
-
 import logging
 
-from src.core.mutation import PowerOffMutation
-from src.core.crossover import PowerOffCrossover
-
-from src.core.problem import TravelingModel
-
-from jmetal.algorithm.multiobjective.nsgaiii import (
-    NSGAIII,
-    UniformReferenceDirectionFactory,
-)
+from jmetal.algorithm.multiobjective.nsgaiii import NSGAIII, UniformReferenceDirectionFactory
 from jmetal.lab.visualization import Plot
 from jmetal.util.observer import ProgressBarObserver, VisualizerObserver, BasicObserver
 from jmetal.util.solution import (
@@ -20,11 +10,15 @@ from jmetal.util.solution import (
 )
 from jmetal.util.comparator import StrengthAndKNNDistanceComparator, DominanceComparator
 
+from src.core.mutation import PowerOffMutation
+from src.core.crossover import PowerOffCrossover
+from src.core.problem import TravelingModel
 
 class Optimizer:
     def __init__(
         self,
         termination_criterion,
+        #dominance_comparator,
         file_infrastructure,
         file_net_infrastructure,
         input_pipeline,
@@ -32,11 +26,15 @@ class Optimizer:
         observer=None,
     ):
         self.termination_criterion = termination_criterion
+        #self.dominance_comparator = dominance_comparator
         self.file_infrastructure = file_infrastructure
         self.file_net_infrastructure = file_net_infrastructure
         self.input_pipeline = input_pipeline
         self.observer = observer
         self.population_size = population_size
+        self.problem = None
+        self.algorithm = None
+        self.front = None
 
     def run(self):
         self.problem = TravelingModel(
@@ -53,7 +51,7 @@ class Optimizer:
             crossover=PowerOffCrossover(probability=1.0),
             mutation=PowerOffMutation(problem=self.problem, probability=1.0),
             termination_criterion=self.termination_criterion,
-            dominance_comparator=DominanceComparator(),
+            #dominance_comparator=self.dominance_comparator,
         )
 
         # if (self.interactive_plot):

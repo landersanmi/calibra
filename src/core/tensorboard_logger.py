@@ -1,7 +1,8 @@
-from tensorboardX import SummaryWriter
 import datetime
+from tensorboardX import SummaryWriter
 
 from src.core.constants import OBJECTIVES_LABELS, CONSTRAINT_LABELS
+
 
 class TensorboardLogger():
     def __init__(self, algo_name="algo", log_dir="logs"):
