@@ -11,3 +11,4 @@ src/resources/*
 tmp/data/*
 tmp/plots/*
 logs/*
+.coverage

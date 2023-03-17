@@ -1,0 +1,7 @@
+coverage:
+  status:
+    project:
+      calibra_base:
+        paths:
+          - TFM
+        informational: true
