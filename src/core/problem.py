@@ -9,7 +9,7 @@ from src.core.models.pipeline import Pipeline
 from src.core.models.infrastructure import Infrastructure
 from src.core.models.network_infrastructure import NetworkInfrastructure
 
-from src.core.constants import OBJECTIVES_LABELS
+from src.core.constants import OBJECTIVES_LABELS, CONSTRAINT_LABELS
 
 from jmetal.core.problem import BinaryProblem
 from jmetal.core.solution import CompositeSolution, BinarySolution
@@ -27,10 +27,10 @@ class TravelingModel(BinaryProblem):
         self.obj_labels = OBJECTIVES_LABELS
 
         self.number_of_models = self.pipe.shape[0]
-        self.number_of_objectives = len(OBJECTIVES_LABELS)
+        self.number_of_objectives = len(self.obj_labels)
         self.number_of_devices = len(self.infra.index)
         self.number_of_net_devices = len(self.net_infra.index)
-        self.number_of_constraints = 8
+        self.number_of_constraints = len(CONSTRAINT_LABELS)
 
     def evaluate(self, solution: CompositeSolution) -> CompositeSolution:
         self.objectives = Objectives()

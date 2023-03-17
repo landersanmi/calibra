@@ -54,11 +54,11 @@ class Optimizer:
             #dominance_comparator=self.dominance_comparator,
         )
 
-        # if (self.interactive_plot):
-        #    self.algorithm.observable.register(observer=ProgressBarObserver(max=self.max_evaluations))
-        #    self.algorithm.observable.register(observer=VisualizerObserver(reference_front=self.problem.reference_front, display_frequency=100))
-        #    basic = BasicObserver(frequency=1.0)
-        #    self.algorithm.observable.register(observer=basic)
+        #if (self.interactive_plot):
+            #self.algorithm.observable.register(observer=ProgressBarObserver(max=self.max_evaluations))
+            #self.algorithm.observable.register(observer=VisualizerObserver(reference_front=self.problem.reference_front, display_frequency=100))
+            #basic = BasicObserver(frequency=1.0)
+            #self.algorithm.observable.register(observer=basic)
 
         if self.observer:
             self.algorithm.observable.register(observer=self.observer)

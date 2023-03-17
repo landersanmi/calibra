@@ -8,13 +8,13 @@ import os
 import pandas as pd
 import time
 import numpy as np
+import matplotlib.pyplot as plt
 import sys
-
+from scipy import spatial
 
 from src.core.models.infrastructure import Infrastructure
-import matplotlib.pyplot as plt
-
 from src.core.models.network_infrastructure import NetworkInfrastructure
+
 from src.core.optimizer import Optimizer
 from src.core.utils import (
     WriteObjectivesToFileObserver,
@@ -28,11 +28,15 @@ from src.core.termination_criterions import (
     StoppingByConstraintsMet,
     StoppingByFullPareto,
     StoppingByGenerationsAfterConstraintsMet,
+    StoppingByTimeAfterConstraintsMet,
+    StoppingByTimeOrGenerationsAfterConstraintsMet,
 )
 
 from src.core.constants import (
     PIPELINE_FILENAME,
     SOLUTION_DF_COLUMNS,
+    OBJECTIVES_LABELS,
+    UTOPIAN_CASE,
     TIMES_FILENAME,
     INFRASTRUCTURE_FILENAME,
     NETWORK_INFRASTRUCTURE_FILENAME,
@@ -41,6 +45,9 @@ from src.core.tensorboard_logger import TensorboardLogger
 
 from jmetal.util.termination_criterion import StoppingByEvaluations, StoppingByTime
 from jmetal.util.comparator import StrengthAndKNNDistanceComparator, RankingAndCrowdingDistanceComparator
+
+from jmetal.lab.visualization import InteractivePlot
+
 
 LOGGER = logging.getLogger("optimizer")
 
@@ -58,7 +65,9 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
         input_pipeline=input_pipeline,
         #termination_criterion=StoppingByTime(max_seconds=120),
         #termination_criterion=StoppingByConstraintsMet(tensorboard_logger),
-        termination_criterion=StoppingByGenerationsAfterConstraintsMet(generations=100, logger=tensorboard_logger),
+        #termination_criterion=StoppingByGenerationsAfterConstraintsMet(generations=5, logger=tensorboard_logger),
+        #termination_criterion=StoppingByTimeAfterConstraintsMet(max_seconds=10, logger=tensorboard_logger),
+        termination_criterion=StoppingByTimeOrGenerationsAfterConstraintsMet(max_seconds=800, max_generations=20, logger=tensorboard_logger),
         observer=WriteObjectivesToTensorboardObserver(tensorboard_logger),
         population_size=population_size,
         #dominance_comparator=StrengthAndKNNDistanceComparator(),
@@ -66,9 +75,17 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
     )
     o.run()
 
-    objectives, device_solutions, net_solutions = [], [], []
+    front = o.get_front()
+    for i, solution in enumerate(front):
+        front[i].objectives[0] = abs(solution.objectives[0])
+
+    plot_front = InteractivePlot(title="Pareto front approximation", axis_labels=OBJECTIVES_LABELS)
+    plot_front.plot(front, label="", filename="tmp/plots/paretos/front_plot", normalize=True)
+
+    objectives_and_constraints, objectives, device_solutions, net_solutions = [], [], [], []
     for s in o.get_front():
-        objectives.append(s.objectives + s.constraints)
+        objectives_and_constraints.append(s.objectives + s.constraints)
+        objectives.append(s.objectives)
         device_solutions.append(s.variables[0].variables)
         net_solutions.append(s.variables[1].variables)
 
@@ -77,18 +94,33 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
         print(solution.objectives)
 
     df = pd.DataFrame(
-        objectives,
+        objectives_and_constraints,
         columns=SOLUTION_DF_COLUMNS,
     )
 
-    best_solutions = []
+    objectives_df = pd.DataFrame(objectives, columns=OBJECTIVES_LABELS)
+    row_dict = dict()
+    for objective, utopian_value in zip(OBJECTIVES_LABELS, UTOPIAN_CASE):
+        row_dict[objective] = utopian_value
+    row = pd.Series(row_dict)
+    objectives_df = pd.concat([objectives_df, row.to_frame().T], ignore_index= True)
+
+    print(objectives_df.iloc[-1].values)
+    objectives_df['cosine_similarity'] = objectives_df.apply(lambda row: spatial.distance.cosine(row.values, objectives_df.iloc[-1]), axis=1)
+    objectives_df = objectives_df.sort_values(by=['cosine_similarity'], ascending=True)
+
+    print(objectives_df.head())
+    best_solutions = [objectives_df.head(2)[1:2].index]
     for i, col in enumerate(df.columns):
         if i < o.problem.number_of_objectives:
             print("--------Goals."+col+"---------")
             print(df.sort_values(by=[col]).head(1))
             best_solutions = np.append(best_solutions, df.sort_values(by=[col]).head(1).index)
-    
+
+
+    '''
     for index in best_solutions:
+        print(index)
         device_names = Infrastructure(file_infrastructure).load().hostname.to_numpy()
         device_solution_df = pd.DataFrame(device_solutions[int(index)], columns=device_names)
         net_device_names = NetworkInfrastructure(file_net_infrastructure).load().id.to_numpy()
@@ -130,10 +162,10 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
                 ax[1].annotate(str(net_matrix[x, y])[0], xy=(y, x),
                          horizontalalignment='center', verticalalignment='center')
         plt.show()
-
-
+    '''
     pt = ParetoTools(o.get_front())
     pt.save()
+
 
 def evaluate_solution(file_solution: str):
     e = Evaluate(file_solution=file_solution)

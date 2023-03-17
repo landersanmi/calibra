@@ -7,10 +7,6 @@ SOLUTION_DF_COLUMNS = OBJECTIVES_LABELS + CONSTRAINT_LABELS
 UTOPIAN_CASE = [0.999999, 0.000001, 0.000001, 0.000001]
 
 
-PIPELINE_FILENAME = "src/resources/pipeline_{pipeline}.yml"
-INFRASTRUCTURE_FILENAME = "src/resources/infrastructure.csv"
-NETWORK_INFRASTRUCTURE_FILENAME = "src/resources/network_infrastructure.csv"
-
-FITNESSES_FILENAME = "tmp/data/fitnesses/fitnesses.txt"
-PARETO_FILENAME = "tmp/data/paretos/pareto.txt"
-TIMES_FILENAME = "tmp/data/times/times.txt"
+PIPELINE_FILENAME = "tests/resources/testpipeline_{pipeline}.yml"
+INFRASTRUCTURE_FILENAME = "tests/resources/infrastructure.csv"
+NETWORK_INFRASTRUCTURE_FILENAME = "tests/resources/network_infrastructure.csv"
