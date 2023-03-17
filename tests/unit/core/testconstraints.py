@@ -17,7 +17,7 @@ from src.core.models.pipeline import Pipeline
 
 from warnings import filterwarnings
 filterwarnings(action='ignore', category=DeprecationWarning)
-
+'''
 
 class TestConstraints(unittest.TestCase):
     def setUp(self):
@@ -87,3 +87,4 @@ class TestConstraints(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+'''

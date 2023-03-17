@@ -1,0 +1,32 @@
+pipeline:
+- link: 3
+  model: m0
+  resources:
+    cpus: 1
+    memory: 1
+    network: 10
+- link: 3
+  model: m1
+  resources:
+    cpus: 2
+    memory: 2
+    network: 20
+- link: 0
+  model: m2
+  resources:
+    cpus: 3
+    memory: 3
+    network: 30
+- link: 0
+  model: m3
+  resources:
+    cpus: 4
+    memory: 4
+    network: 40
+- link: 1
+  model: m4
+  resources:
+    cpus: 5
+    memory: 5
+    network: 50
+version: '1.0'

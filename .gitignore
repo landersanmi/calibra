@@ -4,7 +4,7 @@
 .vscode/*
 *.log
 src/resources/*
-tests/resources/*
+#tests/resources/*
 .idea/*
 .python-version
 tmp/data/*
