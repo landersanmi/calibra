@@ -24,11 +24,10 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Generate Codecov Report
-        run: coverage run -m unittest discover tests
+        run: coverage run -m unittest
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          flags: calibra_base
-          directory: ./TFM
+          files: ./coverage.xml

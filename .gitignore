@@ -12,3 +12,4 @@ tmp/data/*
 tmp/plots/*
 logs/*
 .coverage
+coverage.xml
