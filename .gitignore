@@ -1,6 +1,7 @@
 *__pycache__
 *.swp
 *.venv
+venv_calibra/*
 .vscode/*
 *.log
 src/resources/*
