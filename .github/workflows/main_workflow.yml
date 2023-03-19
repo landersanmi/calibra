@@ -24,7 +24,7 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Generate Codecov Report
-        run: coverage run -m unittest -n src
+        run: coverage run -m unittest
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
