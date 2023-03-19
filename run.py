@@ -80,7 +80,7 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
         front[i].objectives[0] = abs(solution.objectives[0])
 
     plot_front = InteractivePlot(title="Pareto front approximation", axis_labels=OBJECTIVES_LABELS)
-    plot_front.plot(front, label="", filename="tmp/plots/paretos/front_plot", normalize=True)
+    plot_front.plot(front, label="", filename="tmp/plots/paretos/front_plot", normalize=False)
 
     objectives_and_constraints, objectives, device_solutions, net_solutions = [], [], [], []
     for s in o.get_front():

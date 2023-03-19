@@ -7,6 +7,6 @@ SOLUTION_DF_COLUMNS = OBJECTIVES_LABELS + CONSTRAINT_LABELS
 UTOPIAN_CASE = [0.999999, 0.000001, 0.000001, 0.000001]
 
 
-PIPELINE_FILENAME = "tests/resources/testpipeline_{pipeline}.yml"
-INFRASTRUCTURE_FILENAME = "tests/resources/infrastructure.csv"
-NETWORK_INFRASTRUCTURE_FILENAME = "tests/resources/network_infrastructure.csv"
+TEST_PIPELINE_FILENAME = "tests/resources/testpipeline_{pipeline}.yml"
+TEST_INFRASTRUCTURE_FILENAME = "tests/resources/testinfrastructure.csv"
+TEST_NETWORK_INFRASTRUCTURE_FILENAME = "tests/resources/test_network_infrastructure.csv"

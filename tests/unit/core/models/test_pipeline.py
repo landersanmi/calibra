@@ -1,8 +1,7 @@
 import unittest
-import inspect
 
 from tests.unit.core.constants import (
-    PIPELINE_FILENAME,
+    TEST_PIPELINE_FILENAME,
 )
 
 from src.core.models.pipeline import Pipeline
@@ -10,10 +9,13 @@ from src.core.models.pipeline import Pipeline
 
 class TestPipeline(unittest.TestCase):
     def setUp(self):
-        file_pipeline = PIPELINE_FILENAME.format(pipeline="5NET")
-        with open(file_pipeline, "r") as input_data_file:
-            self.input_pipeline = input_data_file.read()
-        self.pipeline = Pipeline(self.input_pipeline).load()
+        self.file_pipeline = TEST_PIPELINE_FILENAME.format(pipeline="5NET")
+        try:
+            with open(self.file_pipeline, "r") as input_data_file:
+                self.input_pipeline = input_data_file.read()
+            self.pipeline = Pipeline(self.input_pipeline).load()
+        except:
+            self.pipeline = None
 
     def test_load(self):
         self.assertIsNotNone(self.pipeline)
@@ -29,6 +31,14 @@ class TestPipeline(unittest.TestCase):
         self.assertEqual(20, self.pipeline.iloc[1].network)
         self.assertEqual(3, self.pipeline.iloc[0].link)
 
+    def suite(self):
+        suite = unittest.TestSuite()
+        suite.addTest(self('test_load'))
+        suite.addTest(self('test_pipeline_shape'))
+        suite.addTest(self('test_values'))
+        return suite
+
 
 if __name__ == "__main__":
-    unittest.main()
+    runner = unittest.TextTestRunner(failfast=True)
+    runner.run(TestPipeline().suite())

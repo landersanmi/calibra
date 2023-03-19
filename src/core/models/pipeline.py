@@ -42,5 +42,4 @@ class Pipeline(Parser):
             data[columns[3]].append(int(self.x.pipeline[i].link))
 
         pipeline_df = pd.DataFrame(data=data, columns=columns)
-        print(pipeline_df.head())
         return pipeline_df
