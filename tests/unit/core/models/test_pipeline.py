@@ -22,7 +22,7 @@ class TestPipeline(unittest.TestCase):
 
     def test_pipeline_shape(self):
         self.assertEqual(5, self.pipeline.shape[0])
-        self.assertEqual(4, self.pipeline.shape[1])
+        self.assertEqual(5, self.pipeline.shape[1])
 
     def test_values(self):
         self.assertEqual(1, self.pipeline.iloc[0].cpus)
