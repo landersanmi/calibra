@@ -81,12 +81,17 @@ class Constraints:
         return result
 
     def net_layers_constraint(self):
+        models_layers = self.pipe.layer.to_numpy()
         net_layers = self.net_infra.layer.to_numpy()
         device_layers = self.infra.cloud_type.to_numpy()
         device_layers[device_layers == 'aws'] = 'cloud'
-        device_layers[device_layers == 'premises'] = 'cloud'
+        #device_layers[device_layers == 'premises'] = 'cloud'
 
         result = 0
+        for i, row in enumerate(self.model_solution):
+            for j, deployed in enumerate(row):
+                if deployed and models_layers[i] != "any" and device_layers[j] != models_layers[i]:
+                    result -= 1
         for i, row in enumerate(self.network_solution):
             for j, deployed in enumerate(row):
                 if deployed and device_layers[j] != net_layers[i]:

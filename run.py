@@ -67,7 +67,7 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
         #termination_criterion=StoppingByConstraintsMet(tensorboard_logger),
         #termination_criterion=StoppingByGenerationsAfterConstraintsMet(generations=5, logger=tensorboard_logger),
         #termination_criterion=StoppingByTimeAfterConstraintsMet(max_seconds=10, logger=tensorboard_logger),
-        termination_criterion=StoppingByTimeOrGenerationsAfterConstraintsMet(max_seconds=800, max_generations=20, logger=tensorboard_logger),
+        termination_criterion=StoppingByTimeOrGenerationsAfterConstraintsMet(max_seconds=60, max_generations=200, logger=tensorboard_logger),
         observer=WriteObjectivesToTensorboardObserver(tensorboard_logger),
         population_size=population_size,
         #dominance_comparator=StrengthAndKNNDistanceComparator(),
@@ -80,7 +80,8 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
         front[i].objectives[0] = abs(solution.objectives[0])
 
     plot_front = InteractivePlot(title="Pareto front approximation", axis_labels=OBJECTIVES_LABELS)
-    plot_front.plot(front, label="", filename="tmp/plots/paretos/front_plot", normalize=False)
+    #plot_front.plot(front, label="", filename="tmp/plots/paretos/front_plot", normalize=False)
+    plot_front.plot(front, label="", filename="tmp/plots/paretos/front_plot_normalized", normalize=True)
 
     objectives_and_constraints, objectives, device_solutions, net_solutions = [], [], [], []
     for s in o.get_front():
@@ -89,7 +90,7 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
         device_solutions.append(s.variables[0].variables)
         net_solutions.append(s.variables[1].variables)
 
-    print("Solution Attributes:")
+    print("Pareto Fronts values:")
     for solution in o.get_front():
         print(solution.objectives)
 
@@ -105,7 +106,6 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
     row = pd.Series(row_dict)
     objectives_df = pd.concat([objectives_df, row.to_frame().T], ignore_index= True)
 
-    print(objectives_df.iloc[-1].values)
     objectives_df['cosine_similarity'] = objectives_df.apply(lambda row: spatial.distance.cosine(row.values, objectives_df.iloc[-1]), axis=1)
     objectives_df = objectives_df.sort_values(by=['cosine_similarity'], ascending=True)
 
@@ -117,11 +117,10 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
             print(df.sort_values(by=[col]).head(1))
             best_solutions = np.append(best_solutions, df.sort_values(by=[col]).head(1).index)
 
+    print("Best solutions IDs {}".format(best_solutions))
 
-    '''
     for index in best_solutions:
-        print(index)
-        device_names = Infrastructure(file_infrastructure).load().hostname.to_numpy()
+        device_names = Infrastructure(file_infrastructure).load().id.to_numpy()
         device_solution_df = pd.DataFrame(device_solutions[int(index)], columns=device_names)
         net_device_names = NetworkInfrastructure(file_net_infrastructure).load().id.to_numpy()
         net_solution_df = pd.DataFrame(net_solutions[int(index)], columns=device_names)
@@ -134,9 +133,8 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
 
         ax[0].imshow(device_matrix, cmap='GnBu', interpolation='nearest')
         plt.sca(ax[0])
-        plt.yticks(range(device_matrix.shape[0]), device_names)
-        plt.xticks(range(device_matrix.shape[1]), models_indexes)
-        plt.xticks(rotation=30)
+        plt.yticks(range(device_matrix.shape[0]), device_names, fontsize=8)
+        plt.xticks(range(device_matrix.shape[1]), models_indexes, fontsize=8)#, rotation=30)
         plt.xlabel('Infra devices')
         plt.xlabel('Pipeline Models')
         plt.title("Device Solution")
@@ -149,9 +147,8 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
 
         ax[1].imshow(net_matrix, cmap='GnBu', interpolation='nearest')
         plt.sca(ax[1])
-        plt.yticks(range(net_matrix.shape[0]), device_names)
-        plt.xticks(range(net_matrix.shape[1]), net_device_names, fontsize=7)
-        plt.xticks(rotation=30)
+        plt.yticks(range(net_matrix.shape[0]), device_names, fontsize=8)
+        plt.xticks(range(net_matrix.shape[1]), net_device_names, fontsize=8)#, rotation=30)
         plt.xlabel('Infra devices')
         plt.xlabel('Network Devices')
         plt.title("Network Solution")
@@ -162,7 +159,7 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
                 ax[1].annotate(str(net_matrix[x, y])[0], xy=(y, x),
                          horizontalalignment='center', verticalalignment='center')
         plt.show()
-    '''
+
     pt = ParetoTools(o.get_front())
     pt.save()
 

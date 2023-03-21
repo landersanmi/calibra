@@ -26,6 +26,7 @@ class PowerOffMutation(Mutation[CompositeSolution]):
             self.bit_flip(number_of_devices, number_of_models, solution)
         self.deployment_mutation(number_of_devices, number_of_models, solution)
         self.irrelevancy_mutation(number_of_devices, number_of_models, solution)
+        self.layer_mutation(number_of_devices, number_of_models, solution)
 
         #---- PARTE B ----#
         self.network_mutation(number_of_devices, number_of_net_devices, solution)
@@ -108,7 +109,6 @@ class PowerOffMutation(Mutation[CompositeSolution]):
         net_layers = self.problem.net_infra.layer.to_numpy()
         device_layers = self.problem.infra.cloud_type.to_numpy()
         device_layers[device_layers == 'aws'] = 'cloud'
-        device_layers[device_layers == 'premises'] = 'cloud'
 
         for i in range(number_of_devices):
             dev_sum_a = sum(device_sol[i])
@@ -137,14 +137,34 @@ class PowerOffMutation(Mutation[CompositeSolution]):
                 if (sum(network_sol[i])) == 1:
                     dev_layer = device_layers[i]
                     net_layer = net_layers[np.where(network_sol[i] == 1)]
+
                     if dev_layer != net_layer:
-                        # Activate a random device from corresponding layer
+                        # Activate a random net device from corresponding layer
                         layer_net_devices_indexes = np.asarray(np.where(net_layers == dev_layer))[0]
                         rand_net_dev = random.choice(layer_net_devices_indexes)
                         network_sol[i] = [False for _ in range(number_of_net_devices)]
                         network_sol[i][rand_net_dev] = True
-
         solution.variables[1].variables = network_sol.transpose()
+
+    def layer_mutation(self, number_of_devices, number_of_net_devices, solution):
+        device_sol = np.array(solution.variables[0].variables).transpose()
+        models_layers = self.problem.pipe.layer.to_numpy()
+
+        device_layers = self.problem.infra.cloud_type.to_numpy()
+        device_layers[device_layers == 'aws'] = 'cloud'
+
+        for i in range(number_of_devices):
+            deployed_model_indexes = np.asarray(np.where(device_sol[i] == True))[0]
+            dev_layer = device_layers[i]
+            for j in deployed_model_indexes:
+                model_layer = models_layers[j]
+                if model_layer != "any" and model_layer != dev_layer:
+                    layer_devices_indexes = np.asarray(np.where(device_layers == model_layer))[0]
+                    rand_dev = random.choice(layer_devices_indexes)
+                    device_sol[i][j] = False
+                    device_sol[rand_dev][j] = True
+
+        solution.variables[0].variables = device_sol.transpose()
 
     def get_name(self):
         return "Power Off Mutation"

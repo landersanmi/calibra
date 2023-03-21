@@ -33,13 +33,18 @@ class Pipeline(Parser):
             columns[1]: [],
             columns[2]: [],
             columns[3]: [],
+            columns[4]: [],
         }
 
         for i in range(len(self.x.pipeline)):
             data[columns[0]].append(float(self.x.pipeline[i].resources.cpus))
             data[columns[1]].append(float(self.x.pipeline[i].resources.memory))
             data[columns[2]].append(float(self.x.pipeline[i].resources.network))
-            data[columns[3]].append(int(self.x.pipeline[i].link))
+            try:
+                data[columns[3]].append(str(self.x.pipeline[i].constraints.node.layer))
+            except:
+                data[columns[3]].append("any")
+            data[columns[4]].append(int(self.x.pipeline[i].link))
 
         pipeline_df = pd.DataFrame(data=data, columns=columns)
         return pipeline_df

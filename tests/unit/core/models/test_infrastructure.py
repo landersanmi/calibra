@@ -13,9 +13,8 @@ class TestInfrastructure(unittest.TestCase):
     def setUp(self):
         try:
             self.infrastructure = Infrastructure(TEST_INFRASTRUCTURE_FILENAME).load()
-            print("Not exceoted")
         except:
-            pass
+            self.infrastructure = None
 
     def test_load(self):
         self.assertIsNotNone(self.infrastructure)

@@ -1,4 +1,4 @@
-PIPELINE_COLUMNS = ["cpus", "memory", "network", "link"]
+PIPELINE_COLUMNS = ["cpus", "memory", "network", "layer", "link"]
 
 OBJECTIVES_LABELS = ["Model Perf", "Cost", "Net Cost", "Net Fail Prob"]
 CONSTRAINT_LABELS = ["cpu", "ram", "deploy", "bandwidth", "net deployment",
