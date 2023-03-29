@@ -31,6 +31,7 @@ class TestInfrastructure(unittest.TestCase):
         self.assertEqual([1, 0.99, 0.98], self.infrastructure.iloc[2]['parallelization'].tolist())
         self.assertEqual(1, max(self.infrastructure['performance'].values))
         self.assertEqual(0, min(self.infrastructure['performance'].values))
+        self.assertEqual("aws", self.infrastructure.iloc[4]['cloud_type'])
 
     def suite(self):
         suite = unittest.TestSuite()

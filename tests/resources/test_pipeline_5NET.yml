@@ -25,6 +25,9 @@ pipeline:
     network: 40
 - link: 1
   model: m4
+  constraints:
+    node:
+      layer: "cloud"
   resources:
     cpus: 5
     memory: 5

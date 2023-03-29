@@ -26,8 +26,8 @@ class Constraints:
         x = self.model_solution.transpose() * self.pipe.memory.to_numpy()
         sum_rows = np.sum(x, axis=1)
         memory = self.infra.memory.to_numpy()
-        c = [i if i > 0 else 0 for i in sum_rows / memory]
-        return 0 if not (memory < sum_rows).any() else -1 * np.sum(c)
+        c = [i if i > 1 else 0 for i in sum_rows / memory]
+        return 0 if not (memory <= sum_rows).any() else -1 * np.sum(c)
 
     def bandwidth_constraint(self):
         models_net_requirements = self.pipe.network.to_numpy()

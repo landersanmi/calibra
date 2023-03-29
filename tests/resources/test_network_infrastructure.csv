@@ -1,0 +1,7 @@
+﻿id;device_name;device_type;max_devices;max_network_traffic;cost;failure_prob;layer
+1;test1;Router;1;10;100;0.01;premises
+2;test2;Router;2;20;200;0.02;premises
+3;test3;Router;3;30;300;0.03;premises
+4;test4;Firewall;4;40;400;0.04;premises
+5;test5;Firewall;5;50;500;0.05;cloud
+
