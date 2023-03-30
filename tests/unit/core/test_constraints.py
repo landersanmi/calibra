@@ -1,4 +1,6 @@
 from tests.unit.core.constants import (
+    OBJECTIVES_LABELS,
+    CONSTRAINT_LABELS,
     TEST_NETWORK_INFRASTRUCTURE_FILENAME,
     TEST_PIPELINE_FILENAME,
     TEST_INFRASTRUCTURE_FILENAME,
@@ -31,13 +33,16 @@ class TestConstraints(unittest.TestCase):
         self.infrastructure = Infrastructure(TEST_INFRASTRUCTURE_FILENAME).load()
         self.net_infrastructure = NetworkInfrastructure(TEST_NETWORK_INFRASTRUCTURE_FILENAME).load()
 
+        self.number_of_objectives = len(OBJECTIVES_LABELS)
+        self.number_of_constraints = len(CONSTRAINT_LABELS)
+
         self.unconstrained_models = []
         with open(UNCONSTRAINED_INFRA_FILENAME, 'r') as f:
             for line in f.readlines():
                 self.unconstrained_models.append(line.split(','))
         self.unconstrained_models = np.asfarray(self.unconstrained_models, dtype=bool)
-        self.unconstrained_model_solution = BinarySolution(number_of_objectives=4,
-                                                           number_of_constraints=8,
+        self.unconstrained_model_solution = BinarySolution(number_of_objectives=self.number_of_objectives,
+                                                           number_of_constraints=self.number_of_constraints,
                                                            number_of_variables=self.infrastructure.shape[1])
         self.unconstrained_model_solution.variables = self.unconstrained_models.transpose()
 
@@ -46,9 +51,9 @@ class TestConstraints(unittest.TestCase):
             for line in f.readlines():
                 self.unconstrained_network.append(line.split(','))
         self.unconstrained_network = np.asfarray(self.unconstrained_network, dtype=bool)
-        self.unconstrained_network_solution = BinarySolution(number_of_objectives=4,
-                                                           number_of_constraints=8,
-                                                           number_of_variables=self.net_infrastructure.shape[1])
+        self.unconstrained_network_solution = BinarySolution(number_of_objectives=self.number_of_objectives,
+                                                             number_of_constraints=self.number_of_constraints,
+                                                             number_of_variables=self.net_infrastructure.shape[1])
         self.unconstrained_network_solution.variables = self.unconstrained_network.transpose()
 
         self.unconstrained_solution = CompositeSolution([self.unconstrained_model_solution,

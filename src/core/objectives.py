@@ -40,7 +40,6 @@ class Objectives:
         ]
 
         number_of_models, _ = s.shape
-
         x = base_performance * coefficient
         x = np.ma.masked_array(x, mask=s == 0)
         return np.nanmean(x, axis=1).sum() / number_of_models
@@ -56,7 +55,7 @@ class Objectives:
         cost_per_net_device = net_infra.cost.to_numpy()
 
         net_cost = np.sum(deployed_net_devices * cost_per_net_device)
-        _, number_of_net_devices = solution.shape
+        number_of_net_devices, _ = solution.shape
         return net_cost / number_of_net_devices
 
     def get_net_fail_probability(
@@ -70,5 +69,5 @@ class Objectives:
         failure_per_net_device = net_infra.failure_prob.to_numpy()
 
         net_fail_probability = np.sum(deployed_net_devices * failure_per_net_device)
-        _, number_of_net_devices = solution.shape
+        number_of_net_devices, _ = solution.shape
         return net_fail_probability / number_of_net_devices
