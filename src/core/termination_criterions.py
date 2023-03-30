@@ -11,71 +11,6 @@ from jmetal.util.termination_criterion import TerminationCriterion
 LOGGER = logging.getLogger("jmetal")
 
 
-class StoppingByNonDominance(TerminationCriterion):
-    def __init__(self, idle_evaluations: int):
-        super(StoppingByNonDominance, self).__init__()
-        self.idle_evaluations = idle_evaluations
-        self.evaluations = 0
-        self.best_solution = None
-
-    def update(self, *args, **kwargs):
-        current_solution = kwargs["SOLUTIONS"][0]
-        if self.best_solution is None:
-            self.best_solution = current_solution
-        else:
-            result = DominanceComparator().compare(self.best_solution, current_solution)
-            if result != 1:
-                self.evaluations += 1
-                LOGGER.info(f"{self.evaluations} evaluations without improvement.")
-            else:
-                self.evaluations = 0
-            self.best_solution = current_solution
-
-    @property
-    def is_met(self):
-        return self.evaluations >= self.idle_evaluations
-
-
-class StoppingByTotalDominance(TerminationCriterion):
-    def __init__(self, idle_evaluations: int):
-        super(StoppingByTotalDominance, self).__init__()
-        self.idle_evaluations = idle_evaluations
-        self.evaluations = 0
-        self.best_objectives = None
-        self.seconds = 0.0
-
-    def update(self, *args, **kwargs):
-        self.seconds = kwargs["COMPUTING_TIME"]
-
-        s = np.array([s.objectives for s in kwargs["SOLUTIONS"]])
-        objective0 = s[np.argsort(s[:, 0])][0][0]
-        objective1 = s[np.argsort(s[:, 1])][0][1]
-        objective2 = s[np.argsort(s[:, 2])][0][2]
-        objective3 = s[np.argsort(s[:, 3])][0][3]
-        current_objectives = [objective0, objective1, objective2, objective3]
-
-        s = kwargs["SOLUTIONS"][0]
-        if self.best_objectives is None:
-            self.best_objectives = current_objectives
-            # LOGGER.info(self.best_objectives)
-        else:
-            # LOGGER.info(self.best_objectives)
-            # LOGGER.info(current_objectives)
-            if all([x <= y for x, y in zip(self.best_objectives, current_objectives)]):
-                self.evaluations += 1
-            else:
-                self.best_objectives = [
-                    min(x, y) for x, y in zip(self.best_objectives, current_objectives)
-                ]
-                self.evaluations = 0
-        LOGGER.info(f"{self.evaluations} evaluations without improvement")
-
-    @property
-    def is_met(self):
-        return self.evaluations >= (self.idle_evaluations - (self.seconds / 14) ** 2)
-        # return self.evaluations >= (self.idle_evaluations)
-
-
 class StoppingByConstraintsMet(TerminationCriterion):
     def __init__(self, logger=None):
         super(StoppingByConstraintsMet, self).__init__()
@@ -85,7 +20,6 @@ class StoppingByConstraintsMet(TerminationCriterion):
 
     def update(self, *args, **kwargs):
         seconds = kwargs["COMPUTING_TIME"]
-        #evaluations = kwargs["EVALUATIONS"]
         c = np.array([s.constraints for s in kwargs["SOLUTIONS"]])
         df = pd.DataFrame(c, columns=CONSTRAINT_LABELS)
 
@@ -129,7 +63,6 @@ class StoppingByGenerationsAfterConstraintsMet(TerminationCriterion):
 
     def update(self, *args, **kwargs):
         seconds = kwargs["COMPUTING_TIME"]
-        #evaluations = kwargs["EVALUATIONS"]
         c = np.array([s.constraints for s in kwargs["SOLUTIONS"]])
         df = pd.DataFrame(c, columns=CONSTRAINT_LABELS)
 
@@ -178,7 +111,6 @@ class StoppingByTimeAfterConstraintsMet(TerminationCriterion):
 
     def update(self, *args, **kwargs):
         self.total_seconds = kwargs["COMPUTING_TIME"]
-        #evaluations = kwargs["EVALUATIONS"]
         c = np.array([s.constraints for s in kwargs["SOLUTIONS"]])
         df = pd.DataFrame(c, columns=CONSTRAINT_LABELS)
 
@@ -236,7 +168,6 @@ class StoppingByTimeOrGenerationsAfterConstraintsMet(TerminationCriterion):
 
     def update(self, *args, **kwargs):
         self.total_seconds = kwargs["COMPUTING_TIME"]
-        #evaluations = kwargs["EVALUATIONS"]
         c = np.array([s.constraints for s in kwargs["SOLUTIONS"]])
         df = pd.DataFrame(c, columns=CONSTRAINT_LABELS)
 
@@ -280,18 +211,3 @@ class StoppingByTimeOrGenerationsAfterConstraintsMet(TerminationCriterion):
     @property
     def is_met(self):
         return self.constraints_met and (self.time_met or self.generations_met)
-
-
-class StoppingByFullPareto(TerminationCriterion):
-    def __init__(self, offspring_size: int):
-        super(StoppingByFullPareto, self).__init__()
-        self.offspring_size = offspring_size
-
-    def update(self, *args, **kwargs):
-        self.current_offspring_size = len(kwargs["SOLUTIONS"])
-        LOGGER.info(f"Current size = {self.current_offspring_size}.")
-
-    @property
-    def is_met(self):
-        return self.offspring_size <= self.current_offspring_size
-
