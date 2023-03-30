@@ -1,4 +1,4 @@
-name: Calibra Build
+name: Build
 
 on:
   push:

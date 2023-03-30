@@ -9,6 +9,8 @@ from tests.unit.core.constants import (
 import unittest
 import numpy as np
 from copy import copy
+from jmetal.core.solution import CompositeSolution, BinarySolution
+
 from src.core.constraints import Constraints
 from src.core.models.infrastructure import Infrastructure
 from src.core.models.pipeline import Pipeline
@@ -17,10 +19,9 @@ from src.core.models.network_infrastructure import NetworkInfrastructure
 from warnings import filterwarnings
 filterwarnings(action='ignore', category=DeprecationWarning)
 
-from jmetal.core.solution import CompositeSolution, BinarySolution
-
 
 class TestConstraints(unittest.TestCase):
+
     def setUp(self):
         self.file_pipeline = TEST_PIPELINE_FILENAME.format(pipeline="5NET")
         with open(self.file_pipeline, "r") as input_data_file:
@@ -52,6 +53,17 @@ class TestConstraints(unittest.TestCase):
 
         self.unconstrained_solution = CompositeSolution([self.unconstrained_model_solution,
                                                          self.unconstrained_network_solution])
+
+    def test_all_constraints_met(self):
+        c = Constraints(self.unconstrained_solution, self.infrastructure, self.net_infrastructure, self.pipeline)
+        self.assertEqual(c.cpu_constraint(), 0)
+        self.assertEqual(c.deployment_constraint(), 0)
+        self.assertEqual(c.ram_constraint(), 0)
+        self.assertEqual(c.bandwidth_constraint(), 0)
+        self.assertEqual(c.net_deployment_constraint(), 0)
+        self.assertEqual(c.net_device_capacity_constraint(), 0)
+        self.assertEqual(c.net_traffic_capacity_constraint(), 0)
+        self.assertEqual(c.net_layers_constraint(), 0)
 
     def test_cpu_constraint_unmet(self):
         constrained_pipeline = self.pipeline.copy()
@@ -109,7 +121,6 @@ class TestConstraints(unittest.TestCase):
         c = Constraints(constrained_bandwidth_solution, self.infrastructure, self.net_infrastructure, constrained_pipeline)
         self.assertEqual(c.bandwidth_constraint(), -5970)  # 20-1010, 30-40, 40-50, 50-5010
 
-
     def test_net_deployment_constraint_unmet(self):
         constrained_net_deployment_solution = self.unconstrained_solution
         constrained_net_deployment_solution.variables[1].variables[0][4] = 1
@@ -130,7 +141,6 @@ class TestConstraints(unittest.TestCase):
         constrained_net_deployment_solution.variables[1].variables[2][2] = 0
         c = Constraints(constrained_net_deployment_solution, self.infrastructure, self.net_infrastructure, self.pipeline)
         self.assertEqual(c.net_deployment_constraint(), -3)
-
 
     def test_net_device_capacity_constraint_unmet(self):
         constrained_net_dev_capacity_solution = self.unconstrained_solution
@@ -175,6 +185,7 @@ class TestConstraints(unittest.TestCase):
 
     def suite(self):
         suite = unittest.TestSuite()
+        suite.addTest(self('test_all_constraints_met'))
         suite.addTest(self('test_cpu_constraint_unmet'))
         suite.addTest(self('test_deployment_constraint_unmet'))
         suite.addTest(self('test_ram_constraint_unmet'))
