@@ -10,6 +10,9 @@ UTOPIAN_CASE = [0.999999, 0.000001, 0.000001, 0.000001]
 TEST_PIPELINE_FILENAME = "tests/resources/test_pipeline_{pipeline}.yml"
 TEST_INFRASTRUCTURE_FILENAME = "tests/resources/test_infrastructure.csv"
 TEST_NETWORK_INFRASTRUCTURE_FILENAME = "tests/resources/test_network_infrastructure.csv"
+TEST_SMALL_PIPELINE_FILENAME = "tests/resources/test_small_pipeline_{pipeline}.yml"
+TEST_SMALL_INFRASTRUCTURE_FILENAME = "tests/resources/test_small_infrastructure.csv"
+TEST_SMALL_NETWORK_INFRASTRUCTURE_FILENAME = "tests/resources/test_small_network_infrastructure.csv"
 
 UNCONSTRAINED_INFRA_FILENAME = "tests/resources/unconstrained_infra.txt"
 UNCONSTRAINED_NET_INFRA_FILENAME = "tests/resources/unconstrained_net_infra.txt"

@@ -1,0 +1,3 @@
+hostname,thread_count,memory,resillience,performance,parallelization,consumption,country_code,cloud_type,instance_type,ts,stage,frequency,bandwidth
+test0,1,1,10,10,"{1}","{0, 0.01}",ES,premises,PowerEdge R440,20/04/2021 7:16,prod,1000,10
+test4,5,5,50,50,"{1,0.99,0.98, 0.97, 0.96}","{0, 0.01, 0.02, 0.03, 0.04, 0.05}",ES,aws,PowerEdge R440,20/04/2021 9:39,prod,1000,50

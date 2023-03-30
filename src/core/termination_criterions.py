@@ -77,7 +77,7 @@ class StoppingByTotalDominance(TerminationCriterion):
 
 
 class StoppingByConstraintsMet(TerminationCriterion):
-    def __init__(self, logger):
+    def __init__(self, logger=None):
         super(StoppingByConstraintsMet, self).__init__()
         self.constraints_met = False
         self.generations = 0
@@ -108,7 +108,8 @@ class StoppingByConstraintsMet(TerminationCriterion):
         LOGGER.info(log_msg)
 
         del constraints_sizes['size total']
-        self.tensorboard_logger.log_constraints(constraints=constraints_sizes, constraints_met=self.constraints_met, x_axis_value=self.generations)
+        if self.tensorboard_logger is not None:
+            self.tensorboard_logger.log_constraints(constraints=constraints_sizes, constraints_met=self.constraints_met, x_axis_value=self.generations)
         self.generations += 1
 
     @property
@@ -117,7 +118,7 @@ class StoppingByConstraintsMet(TerminationCriterion):
 
 
 class StoppingByGenerationsAfterConstraintsMet(TerminationCriterion):
-    def __init__(self, generations, logger):
+    def __init__(self, generations, logger=None):
         super(StoppingByGenerationsAfterConstraintsMet, self).__init__()
         self.constraints_met = False
         self.generations_met = False
@@ -155,7 +156,8 @@ class StoppingByGenerationsAfterConstraintsMet(TerminationCriterion):
             LOGGER.info(log_msg)
 
         del constraints_sizes['size total']
-        self.tensorboard_logger.log_constraints(constraints=constraints_sizes, constraints_met=self.constraints_met, x_axis_value=self.all_generations)
+        if self.tensorboard_logger is not None:
+            self.tensorboard_logger.log_constraints(constraints=constraints_sizes, constraints_met=self.constraints_met, x_axis_value=self.all_generations)
         self.all_generations += 1
 
     @property
@@ -164,7 +166,7 @@ class StoppingByGenerationsAfterConstraintsMet(TerminationCriterion):
 
 
 class StoppingByTimeAfterConstraintsMet(TerminationCriterion):
-    def __init__(self, max_seconds, logger):
+    def __init__(self, max_seconds, logger=None):
         super(StoppingByTimeAfterConstraintsMet, self).__init__()
         self.constraints_met = False
         self.time_met = False
@@ -206,7 +208,8 @@ class StoppingByTimeAfterConstraintsMet(TerminationCriterion):
             LOGGER.info(log_msg)
 
         del constraints_sizes['size total']
-        self.tensorboard_logger.log_constraints(constraints=constraints_sizes, constraints_met=self.constraints_met, x_axis_value=self.generations)
+        if self.tensorboard_logger is not None:
+            self.tensorboard_logger.log_constraints(constraints=constraints_sizes, constraints_met=self.constraints_met, x_axis_value=self.generations)
         self.generations += 1
 
     @property
@@ -215,7 +218,7 @@ class StoppingByTimeAfterConstraintsMet(TerminationCriterion):
 
 
 class StoppingByTimeOrGenerationsAfterConstraintsMet(TerminationCriterion):
-    def __init__(self, max_seconds, max_generations, logger):
+    def __init__(self, max_seconds, max_generations, logger=None):
         super(StoppingByTimeOrGenerationsAfterConstraintsMet, self).__init__()
         self.constraints_met = False
 
@@ -270,7 +273,8 @@ class StoppingByTimeOrGenerationsAfterConstraintsMet(TerminationCriterion):
             LOGGER.info(log_msg)
 
         del constraints_sizes['size total']
-        self.tensorboard_logger.log_constraints(constraints=constraints_sizes, constraints_met=self.constraints_met, x_axis_value=self.all_generations)
+        if self.tensorboard_logger is not None:
+            self.tensorboard_logger.log_constraints(constraints=constraints_sizes, constraints_met=self.constraints_met, x_axis_value=self.all_generations)
         self.all_generations += 1
 
     @property

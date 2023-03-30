@@ -1,0 +1,17 @@
+pipeline:
+- link: 3
+  model: m0
+  resources:
+    cpus: 1
+    memory: 1
+    network: 10
+- link: 1
+  model: m1
+  constraints:
+    node:
+      layer: "cloud"
+  resources:
+    cpus: 5
+    memory: 5
+    network: 50
+version: '1.0'
