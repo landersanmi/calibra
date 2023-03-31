@@ -13,4 +13,4 @@ NETWORK_INFRASTRUCTURE_FILENAME = "src/resources/network_infrastructure.csv"
 
 FITNESSES_FILENAME = "tmp/data/fitnesses/fitnesses.txt"
 PARETO_FILENAME = "tmp/data/paretos/pareto.txt"
-TIMES_FILENAME = "tmp/data/times/times.txt"
+TIMES_FILENAME = "tmp/data/times/times.csv"

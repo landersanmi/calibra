@@ -67,7 +67,7 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
         #termination_criterion=StoppingByConstraintsMet(tensorboard_logger),
         #termination_criterion=StoppingByGenerationsAfterConstraintsMet(generations=5, logger=tensorboard_logger),
         #termination_criterion=StoppingByTimeAfterConstraintsMet(max_seconds=10, logger=tensorboard_logger),
-        termination_criterion=StoppingByTimeOrGenerationsAfterConstraintsMet(max_seconds=60, max_generations=200, logger=tensorboard_logger),
+        termination_criterion=StoppingByTimeOrGenerationsAfterConstraintsMet(max_seconds=5, max_generations=200, logger=tensorboard_logger),
         observer=WriteObjectivesToTensorboardObserver(tensorboard_logger),
         population_size=population_size,
         #dominance_comparator=StrengthAndKNNDistanceComparator(),
@@ -181,8 +181,24 @@ def evaluate_solution(file_solution: str):
 
 
 def generate_times(file_infrastructure: str, file_net_infrastructure:str):
+    #pipelines = ['5NET', '10NET', '15NET', '20NET', '30NET']
+    pipelines = ['5NET', '10NET']
+    iterations = 7
     total_times = []
-    pipelines = ['5NET', '5NETXL', '10NET', '10NETXL']
+
+    if os.path.exists(TIMES_FILENAME):
+        os.remove(TIMES_FILENAME)
+
+    columnames = list()
+    columnames.append("pipeline")
+    for i in range(iterations):
+        columnames.append(str(i))
+    columnames.append("avg_time")
+    columnames.append("std_deviation")
+    with open(TIMES_FILENAME, "w", newline='') as times_file:
+        writer = csv.writer(times_file)
+        writer.writerow(columnames)
+
     for p in pipelines:
         file_pipeline = PIPELINE_FILENAME.format(pipeline=p)
         with open(file_pipeline, "r") as input_data_file:
@@ -192,7 +208,7 @@ def generate_times(file_infrastructure: str, file_net_infrastructure:str):
         pipe_time = []
         pipe_time.append(p)
         
-        for i in range(5):
+        for i in range(iterations):
             tensorboard_logger = TensorboardLogger(algo_name=str(p) + '[' + str(i) + ']')
             start_time = time.time()
             LOGGER.info(f"Executing iteration {i} of {file_pipeline}.")
@@ -206,14 +222,19 @@ def generate_times(file_infrastructure: str, file_net_infrastructure:str):
             ).run()
             end_time = time.time()
             pipe_time.append(end_time - start_time)
+        times = list([float(time) for time in pipe_time[1:]])
+        pipe_time.append(str(sum(times)/int(iterations)))
+        pipe_time.append(str(np.std(times)))
+
+        with open(TIMES_FILENAME, "a", newline='') as times_file:
+            writer = csv.writer(times_file)
+            writer.writerow(pipe_time)
+
         total_times.append(pipe_time)
 
     print(total_times)
-    if os.path.exists(TIMES_FILENAME):
-        os.remove(TIMES_FILENAME)
-    with open(TIMES_FILENAME, "w", newline='') as out_file:
-        writer = csv.writer(out_file)
-        writer.writerows(total_times)
+
+
 
 
 def generate_pareto(file_infrastructure):
