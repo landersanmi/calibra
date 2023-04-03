@@ -4,7 +4,7 @@
 venv_calibra/*
 .vscode/*
 *.log
-src/resources/*
+src/resources/geninfra.sh
 #tests/resources/*
 .idea/*
 .python-version

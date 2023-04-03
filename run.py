@@ -1,19 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 import argparse
 import csv
 import logging
 import os
-import pandas as pd
-import time
 import numpy as np
-import matplotlib.pyplot as plt
-import sys
-from scipy import spatial
-
-from src.core.models.infrastructure import Infrastructure
-from src.core.models.network_infrastructure import NetworkInfrastructure
 
 from src.core.optimizer import Optimizer
 from src.core.utils import (
@@ -23,15 +14,11 @@ from src.core.utils import (
     Evaluate,
 )
 from src.core.termination_criterions import (
-    StoppingByNonDominance,
-    StoppingByTotalDominance,
     StoppingByConstraintsMet,
-    StoppingByFullPareto,
     StoppingByGenerationsAfterConstraintsMet,
     StoppingByTimeAfterConstraintsMet,
     StoppingByTimeOrGenerationsAfterConstraintsMet,
 )
-
 from src.core.constants import (
     PIPELINE_FILENAME,
     SOLUTION_DF_COLUMNS,
@@ -44,10 +31,7 @@ from src.core.constants import (
 from src.core.tensorboard_logger import TensorboardLogger
 
 from jmetal.util.termination_criterion import StoppingByEvaluations, StoppingByTime
-from jmetal.util.comparator import StrengthAndKNNDistanceComparator, RankingAndCrowdingDistanceComparator
-
 from jmetal.lab.visualization import InteractivePlot
-
 
 LOGGER = logging.getLogger("optimizer")
 
@@ -63,102 +47,27 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
         file_infrastructure=file_infrastructure,
         file_net_infrastructure=file_net_infrastructure,
         input_pipeline=input_pipeline,
-        #termination_criterion=StoppingByTime(max_seconds=120),
-        #termination_criterion=StoppingByConstraintsMet(tensorboard_logger),
-        #termination_criterion=StoppingByGenerationsAfterConstraintsMet(generations=5, logger=tensorboard_logger),
-        #termination_criterion=StoppingByTimeAfterConstraintsMet(max_seconds=10, logger=tensorboard_logger),
         termination_criterion=StoppingByTimeOrGenerationsAfterConstraintsMet(max_seconds=5, max_generations=200, logger=tensorboard_logger),
         observer=WriteObjectivesToTensorboardObserver(tensorboard_logger),
         population_size=population_size,
-        #dominance_comparator=StrengthAndKNNDistanceComparator(),
-        #dominance_comparator=RankingAndCrowdingDistanceComparator(),
     )
     o.run()
 
     front = o.get_front()
     for i, solution in enumerate(front):
         front[i].objectives[0] = abs(solution.objectives[0])
+        print(front[i].objectives)
 
     plot_front = InteractivePlot(title="Pareto front approximation", axis_labels=OBJECTIVES_LABELS)
-    #plot_front.plot(front, label="", filename="tmp/plots/paretos/front_plot", normalize=False)
+    plot_front.plot(front, label="", filename="tmp/plots/paretos/front_plot", normalize=False)
     plot_front.plot(front, label="", filename="tmp/plots/paretos/front_plot_normalized", normalize=True)
-
-    objectives_and_constraints, objectives, device_solutions, net_solutions = [], [], [], []
-    for s in o.get_front():
-        objectives_and_constraints.append(s.objectives + s.constraints)
-        objectives.append(s.objectives)
-        device_solutions.append(s.variables[0].variables)
-        net_solutions.append(s.variables[1].variables)
 
     print("Pareto Fronts values:")
     for solution in o.get_front():
         print(solution.objectives)
 
-    df = pd.DataFrame(
-        objectives_and_constraints,
-        columns=SOLUTION_DF_COLUMNS,
-    )
-
-    objectives_df = pd.DataFrame(objectives, columns=OBJECTIVES_LABELS)
-    row_dict = dict()
-    for objective, utopian_value in zip(OBJECTIVES_LABELS, UTOPIAN_CASE):
-        row_dict[objective] = utopian_value
-    row = pd.Series(row_dict)
-    objectives_df = pd.concat([objectives_df, row.to_frame().T], ignore_index= True)
-
-    objectives_df['cosine_similarity'] = objectives_df.apply(lambda row: spatial.distance.cosine(row.values, objectives_df.iloc[-1]), axis=1)
-    objectives_df = objectives_df.sort_values(by=['cosine_similarity'], ascending=True)
-
-    print(objectives_df.head())
-    best_solutions = [objectives_df.head(2)[1:2].index]
-    for i, col in enumerate(df.columns):
-        if i < o.problem.number_of_objectives:
-            print("--------Goals."+col+"---------")
-            print(df.sort_values(by=[col]).head(1))
-            best_solutions = np.append(best_solutions, df.sort_values(by=[col]).head(1).index)
-
-    print("Best solutions IDs {}".format(best_solutions))
-
-    for index in best_solutions:
-        device_names = Infrastructure(file_infrastructure).load().id.to_numpy()
-        device_solution_df = pd.DataFrame(device_solutions[int(index)], columns=device_names)
-        net_device_names = NetworkInfrastructure(file_net_infrastructure).load().id.to_numpy()
-        net_solution_df = pd.DataFrame(net_solutions[int(index)], columns=device_names)
-
-        device_matrix = np.array(device_solution_df[device_names].values, dtype=float).T
-        net_matrix = np.array(net_solution_df[device_names].values, dtype=float).T
-        models_indexes = device_solution_df.index
-
-        fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(16,9), dpi=90, gridspec_kw={'width_ratios': [len(models_indexes), len(net_device_names)]})
-
-        ax[0].imshow(device_matrix, cmap='GnBu', interpolation='nearest')
-        plt.sca(ax[0])
-        plt.yticks(range(device_matrix.shape[0]), device_names, fontsize=8)
-        plt.xticks(range(device_matrix.shape[1]), models_indexes, fontsize=8)#, rotation=30)
-        plt.xlabel('Infra devices')
-        plt.xlabel('Pipeline Models')
-        plt.title("Device Solution")
-
-        # place '0' or '1' values centered in the individual squares
-        for x in range(device_matrix.shape[0]):
-            for y in range(device_matrix.shape[1]):
-                ax[0].annotate(str(device_matrix[x, y])[0], xy=(y, x),
-                            horizontalalignment='center', verticalalignment='center')
-
-        ax[1].imshow(net_matrix, cmap='GnBu', interpolation='nearest')
-        plt.sca(ax[1])
-        plt.yticks(range(net_matrix.shape[0]), device_names, fontsize=8)
-        plt.xticks(range(net_matrix.shape[1]), net_device_names, fontsize=8)#, rotation=30)
-        plt.xlabel('Infra devices')
-        plt.xlabel('Network Devices')
-        plt.title("Network Solution")
-
-        # place '0' or '1' values centered in the individual squares
-        for x in range(net_matrix.shape[0]):
-            for y in range(net_matrix.shape[1]):
-                ax[1].annotate(str(net_matrix[x, y])[0], xy=(y, x),
-                         horizontalalignment='center', verticalalignment='center')
-        plt.show()
+    best_solution = o.get_best_solution(include_fitness_specific=True)
+    o.plot_deployments(best_solution)
 
     pt = ParetoTools(o.get_front())
     pt.save()
@@ -181,8 +90,7 @@ def evaluate_solution(file_solution: str):
 
 
 def generate_times(file_infrastructure: str, file_net_infrastructure:str):
-    #pipelines = ['5NET', '10NET', '15NET', '20NET', '30NET']
-    pipelines = ['5NET', '10NET']
+    pipelines = ['5NET', '10NET', '15NET', '20NET', '30NET']
     iterations = 7
     total_times = []
 
@@ -195,6 +103,10 @@ def generate_times(file_infrastructure: str, file_net_infrastructure:str):
         columnames.append(str(i))
     columnames.append("avg_time")
     columnames.append("std_deviation")
+    for objective in OBJECTIVES_LABELS:
+        columnames.append(objective.replace(" ", "_").lower())
+    columnames.append("avg_opt_time")
+
     with open(TIMES_FILENAME, "w", newline='') as times_file:
         writer = csv.writer(times_file)
         writer.writerow(columnames)
@@ -205,36 +117,44 @@ def generate_times(file_infrastructure: str, file_net_infrastructure:str):
             input_pipeline = input_data_file.read()
         
         population_size = 200
-        pipe_time = []
-        pipe_time.append(p)
-        
+        row = list()
+        row.append(p)
+        objectives = []
+        opt_times = []
+
         for i in range(iterations):
             tensorboard_logger = TensorboardLogger(algo_name=str(p) + '[' + str(i) + ']')
-            start_time = time.time()
             LOGGER.info(f"Executing iteration {i} of {file_pipeline}.")
-            Optimizer(
+            optimizer = Optimizer(
                 file_infrastructure=file_infrastructure,
                 file_net_infrastructure=file_net_infrastructure,
                 input_pipeline=input_pipeline,
-                termination_criterion=StoppingByConstraintsMet(tensorboard_logger),
+                termination_criterion=StoppingByTimeOrGenerationsAfterConstraintsMet(max_seconds=600, max_generations=100, logger=tensorboard_logger),
                 observer=WriteObjectivesToTensorboardObserver(tensorboard_logger),
                 population_size=population_size,
-            ).run()
-            end_time = time.time()
-            pipe_time.append(end_time - start_time)
-        times = list([float(time) for time in pipe_time[1:]])
-        pipe_time.append(str(sum(times)/int(iterations)))
-        pipe_time.append(str(np.std(times)))
+            )
+            optimizer.run()
+
+            row.append(optimizer.termination_criterion.seconds_to_met_constraints)
+            best_sol = optimizer.get_best_solution(include_fitness_specific=False)[0]
+            print("Best solution ID: ", best_sol)
+            objectives.append(optimizer.get_front()[best_sol].objectives)
+            opt_times.append(optimizer.termination_criterion.total_seconds)
+
+        times = list([float(time) for time in row[1:]])
+        row.append(str(sum(times)/int(iterations)))
+        row.append(str(np.std(times)))
+
+        objectives = np.transpose(objectives).sum(axis=1)/iterations
+        for objective in objectives:
+            row.append(str(objective))
+        row.append(str(sum(opt_times)/iterations))
 
         with open(TIMES_FILENAME, "a", newline='') as times_file:
             writer = csv.writer(times_file)
-            writer.writerow(pipe_time)
+            writer.writerow(row)
 
-        total_times.append(pipe_time)
-
-    print(total_times)
-
-
+        total_times.append(row)
 
 
 def generate_pareto(file_infrastructure):
