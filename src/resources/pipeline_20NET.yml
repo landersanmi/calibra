@@ -1,0 +1,182 @@
+pipeline:
+- constraints:
+    node:
+      layer: cloud-azure
+  link: 16
+  model: m0
+  resources:
+    cpus: 2
+    memory: 3.2
+    network: 6
+- constraints:
+    node:
+      layer: cloud-aws
+  link: 4
+  model: m1
+  resources:
+    cpus: 1
+    memory: 3.8
+    network: 11
+- constraints:
+    node:
+      layer: premises-tecnalia700
+  link: 3
+  model: m2
+  resources:
+    cpus: 2
+    memory: 2.6
+    network: 0
+- constraints:
+    node:
+      layer: premises-tecnalia101
+  link: 8
+  model: m3
+  resources:
+    cpus: 2
+    memory: 2.6
+    network: 33
+- constraints:
+    node:
+      layer: edge-river
+  link: 5
+  model: m4
+  resources:
+    cpus: 2
+    memory: 2.7
+    network: 23
+- constraints:
+    node:
+      layer: any
+  link: 8
+  model: m5
+  resources:
+    cpus: 2
+    memory: 1.7
+    network: 28
+- constraints:
+    node:
+      layer: cloud-aws
+  link: 14
+  model: m6
+  resources:
+    cpus: 1
+    memory: 2.8
+    network: 34
+- constraints:
+    node:
+      layer: cloud-azure
+  link: 15
+  model: m7
+  resources:
+    cpus: 1
+    memory: 3.7
+    network: 12
+- constraints:
+    node:
+      layer: edge-road
+  link: 18
+  model: m8
+  resources:
+    cpus: 2
+    memory: 1.6
+    network: 31
+- constraints:
+    node:
+      layer: any
+  link: 1
+  model: m9
+  resources:
+    cpus: 1
+    memory: 1.5
+    network: 11
+- constraints:
+    node:
+      layer: cloud-azure
+  link: 17
+  model: m10
+  resources:
+    cpus: 2
+    memory: 2.7
+    network: 25
+- constraints:
+    node:
+      layer: premises-tecnalia700
+  link: 17
+  model: m11
+  resources:
+    cpus: 4
+    memory: 8.8
+    network: 73
+- constraints:
+    node:
+      layer: cloud-azure
+  link: 17
+  model: m12
+  resources:
+    cpus: 1
+    memory: 2.2
+    network: 6
+- constraints:
+    node:
+      layer: premises-tecnalia101
+  link: 5
+  model: m13
+  resources:
+    cpus: 13
+    memory: 230.5
+    network: 153
+- constraints:
+    node:
+      layer: premises-tecnalia700
+  link: 6
+  model: m14
+  resources:
+    cpus: 2
+    memory: 3.8
+    network: 16
+- constraints:
+    node:
+      layer: edge-road
+  link: 11
+  model: m15
+  resources:
+    cpus: 1
+    memory: 2.9
+    network: 25
+- constraints:
+    node:
+      layer: any
+  link: 19
+  model: m16
+  resources:
+    cpus: 1
+    memory: 2.2
+    network: 26
+- constraints:
+    node:
+      layer: premises-tecnalia101
+  link: 12
+  model: m17
+  resources:
+    cpus: 1
+    memory: 2.9
+    network: 8
+- constraints:
+    node:
+      layer: any
+  link: 7
+  model: m18
+  resources:
+    cpus: 4
+    memory: 11.0
+    network: 72
+- constraints:
+    node:
+      layer: edge-river
+  link: 10
+  model: m19
+  resources:
+    cpus: 2
+    memory: 2.3
+    network: 7
+version: '1.0'

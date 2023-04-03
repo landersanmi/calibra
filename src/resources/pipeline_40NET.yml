@@ -1,0 +1,362 @@
+pipeline:
+- constraints:
+    node:
+      layer: premises-tecnalia101
+  link: 3
+  model: m0
+  resources:
+    cpus: 1
+    memory: 3.2
+    network: 21
+- constraints:
+    node:
+      layer: any
+  link: 21
+  model: m1
+  resources:
+    cpus: 1
+    memory: 3.8
+    network: 10
+- constraints:
+    node:
+      layer: edge-river
+  link: 12
+  model: m2
+  resources:
+    cpus: 1
+    memory: 2.7
+    network: 19
+- constraints:
+    node:
+      layer: any
+  link: 2
+  model: m3
+  resources:
+    cpus: 1
+    memory: 3.7
+    network: 20
+- constraints:
+    node:
+      layer: any
+  link: 23
+  model: m4
+  resources:
+    cpus: 1
+    memory: 2.7
+    network: 21
+- constraints:
+    node:
+      layer: edge-road
+  link: 5
+  model: m5
+  resources:
+    cpus: 1
+    memory: 1.7
+    network: 0
+- constraints:
+    node:
+      layer: any
+  link: 7
+  model: m6
+  resources:
+    cpus: 1
+    memory: 3.1
+    network: 35
+- constraints:
+    node:
+      layer: premises-tecnalia101
+  link: 20
+  model: m7
+  resources:
+    cpus: 1
+    memory: 3.5
+    network: 8
+- constraints:
+    node:
+      layer: any
+  link: 20
+  model: m8
+  resources:
+    cpus: 1
+    memory: 3.0
+    network: 33
+- constraints:
+    node:
+      layer: edge-river
+  link: 32
+  model: m9
+  resources:
+    cpus: 2
+    memory: 3.0
+    network: 15
+- constraints:
+    node:
+      layer: premises-tecnalia101
+  link: 37
+  model: m10
+  resources:
+    cpus: 2
+    memory: 1.2
+    network: 16
+- constraints:
+    node:
+      layer: edge-river
+  link: 32
+  model: m11
+  resources:
+    cpus: 1
+    memory: 3.3
+    network: 12
+- constraints:
+    node:
+      layer: edge-river
+  link: 15
+  model: m12
+  resources:
+    cpus: 2
+    memory: 1.1
+    network: 35
+- constraints:
+    node:
+      layer: any
+  link: 0
+  model: m13
+  resources:
+    cpus: 1
+    memory: 1.9
+    network: 9
+- constraints:
+    node:
+      layer: premises-tecnalia700
+  link: 31
+  model: m14
+  resources:
+    cpus: 1
+    memory: 1.6
+    network: 21
+- constraints:
+    node:
+      layer: any
+  link: 33
+  model: m15
+  resources:
+    cpus: 2
+    memory: 12.2
+    network: 50
+- constraints:
+    node:
+      layer: any
+  link: 10
+  model: m16
+  resources:
+    cpus: 1
+    memory: 2.5
+    network: 20
+- constraints:
+    node:
+      layer: cloud-azure
+  link: 14
+  model: m17
+  resources:
+    cpus: 2
+    memory: 1.9
+    network: 5
+- constraints:
+    node:
+      layer: cloud-aws
+  link: 36
+  model: m18
+  resources:
+    cpus: 4
+    memory: 13.6
+    network: 56
+- constraints:
+    node:
+      layer: cloud-azure
+  link: 27
+  model: m19
+  resources:
+    cpus: 1
+    memory: 2.9
+    network: 7
+- constraints:
+    node:
+      layer: any
+  link: 20
+  model: m20
+  resources:
+    cpus: 24
+    memory: 107.8
+    network: 118
+- constraints:
+    node:
+      layer: cloud-azure
+  link: 6
+  model: m21
+  resources:
+    cpus: 2
+    memory: 3.3
+    network: 30
+- constraints:
+    node:
+      layer: cloud-azure
+  link: 13
+  model: m22
+  resources:
+    cpus: 2
+    memory: 1.4
+    network: 22
+- constraints:
+    node:
+      layer: cloud-azure
+  link: 2
+  model: m23
+  resources:
+    cpus: 1
+    memory: 2.6
+    network: 15
+- constraints:
+    node:
+      layer: cloud-aws
+  link: 0
+  model: m24
+  resources:
+    cpus: 1
+    memory: 1.5
+    network: 34
+- constraints:
+    node:
+      layer: cloud-aws
+  link: 10
+  model: m25
+  resources:
+    cpus: 1
+    memory: 1.7
+    network: 27
+- constraints:
+    node:
+      layer: any
+  link: 8
+  model: m26
+  resources:
+    cpus: 7
+    memory: 10.2
+    network: 39
+- constraints:
+    node:
+      layer: cloud-aws
+  link: 12
+  model: m27
+  resources:
+    cpus: 2
+    memory: 3.2
+    network: 18
+- constraints:
+    node:
+      layer: any
+  link: 16
+  model: m28
+  resources:
+    cpus: 7
+    memory: 11.6
+    network: 61
+- constraints:
+    node:
+      layer: any
+  link: 13
+  model: m29
+  resources:
+    cpus: 6
+    memory: 4.2
+    network: 57
+- constraints:
+    node:
+      layer: any
+  link: 13
+  model: m30
+  resources:
+    cpus: 2
+    memory: 1.7
+    network: 5
+- constraints:
+    node:
+      layer: any
+  link: 28
+  model: m31
+  resources:
+    cpus: 1
+    memory: 2.5
+    network: 3
+- constraints:
+    node:
+      layer: premises-tecnalia700
+  link: 2
+  model: m32
+  resources:
+    cpus: 2
+    memory: 2.6
+    network: 9
+- constraints:
+    node:
+      layer: any
+  link: 27
+  model: m33
+  resources:
+    cpus: 2
+    memory: 3.9
+    network: 0
+- constraints:
+    node:
+      layer: edge-road
+  link: 5
+  model: m34
+  resources:
+    cpus: 1
+    memory: 3.6
+    network: 1
+- constraints:
+    node:
+      layer: premises-tecnalia101
+  link: 2
+  model: m35
+  resources:
+    cpus: 1
+    memory: 3.8
+    network: 6
+- constraints:
+    node:
+      layer: premises-tecnalia700
+  link: 35
+  model: m36
+  resources:
+    cpus: 2
+    memory: 2.8
+    network: 18
+- constraints:
+    node:
+      layer: any
+  link: 33
+  model: m37
+  resources:
+    cpus: 2
+    memory: 2.3
+    network: 2
+- constraints:
+    node:
+      layer: cloud-aws
+  link: 31
+  model: m38
+  resources:
+    cpus: 1
+    memory: 1.3
+    network: 22
+- constraints:
+    node:
+      layer: cloud-aws
+  link: 11
+  model: m39
+  resources:
+    cpus: 2
+    memory: 3.0
+    network: 26
+version: '1.0'

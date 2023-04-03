@@ -1,0 +1,47 @@
+pipeline:
+- constraints:
+    node:
+      layer: any
+  link: 2
+  model: m0
+  resources:
+    cpus: 3
+    memory: 1.4
+    network: 31
+- constraints:
+    node:
+      layer: edge-river
+  link: 4
+  model: m1
+  resources:
+    cpus: 1
+    memory: 1.5
+    network: 18
+- constraints:
+    node:
+      layer: premises-tecnalia101
+  link: 4
+  model: m2
+  resources:
+    cpus: 6
+    memory: 8.4
+    network: 36
+- constraints:
+    node:
+      layer: edge-road
+  link: 1
+  model: m3
+  resources:
+    cpus: 2
+    memory: 1.9
+    network: 33
+- constraints:
+    node:
+      layer: any
+  link: 2
+  model: m4
+  resources:
+    cpus: 1
+    memory: 1.7
+    network: 33
+version: '1.0'

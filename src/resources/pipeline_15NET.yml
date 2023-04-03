@@ -1,0 +1,137 @@
+pipeline:
+- constraints:
+    node:
+      layer: any
+  link: 5
+  model: m0
+  resources:
+    cpus: 5
+    memory: 4.2
+    network: 38
+- constraints:
+    node:
+      layer: any
+  link: 5
+  model: m1
+  resources:
+    cpus: 7
+    memory: 9.9
+    network: 43
+- constraints:
+    node:
+      layer: cloud-azure
+  link: 14
+  model: m2
+  resources:
+    cpus: 2
+    memory: 1.6
+    network: 2
+- constraints:
+    node:
+      layer: edge-road
+  link: 9
+  model: m3
+  resources:
+    cpus: 2
+    memory: 2.7
+    network: 29
+- constraints:
+    node:
+      layer: any
+  link: 6
+  model: m4
+  resources:
+    cpus: 2
+    memory: 2.2
+    network: 30
+- constraints:
+    node:
+      layer: cloud-aws
+  link: 3
+  model: m5
+  resources:
+    cpus: 1
+    memory: 2.5
+    network: 12
+- constraints:
+    node:
+      layer: premises-tecnalia101
+  link: 2
+  model: m6
+  resources:
+    cpus: 2
+    memory: 3.4
+    network: 12
+- constraints:
+    node:
+      layer: any
+  link: 4
+  model: m7
+  resources:
+    cpus: 2
+    memory: 2.8
+    network: 15
+- constraints:
+    node:
+      layer: cloud-azure
+  link: 14
+  model: m8
+  resources:
+    cpus: 2
+    memory: 3.6
+    network: 20
+- constraints:
+    node:
+      layer: premises-tecnalia700
+  link: 7
+  model: m9
+  resources:
+    cpus: 2
+    memory: 3.1
+    network: 9
+- constraints:
+    node:
+      layer: any
+  link: 1
+  model: m10
+  resources:
+    cpus: 2
+    memory: 1.7
+    network: 3
+- constraints:
+    node:
+      layer: any
+  link: 12
+  model: m11
+  resources:
+    cpus: 1
+    memory: 1.4
+    network: 19
+- constraints:
+    node:
+      layer: premises-tecnalia101
+  link: 12
+  model: m12
+  resources:
+    cpus: 2
+    memory: 2.6
+    network: 20
+- constraints:
+    node:
+      layer: cloud-azure
+  link: 7
+  model: m13
+  resources:
+    cpus: 2
+    memory: 2.0
+    network: 31
+- constraints:
+    node:
+      layer: any
+  link: 4
+  model: m14
+  resources:
+    cpus: 1
+    memory: 3.4
+    network: 1
+version: '1.0'

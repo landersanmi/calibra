@@ -1,0 +1,92 @@
+pipeline:
+- constraints:
+    node:
+      layer: any
+  link: 0
+  model: m0
+  resources:
+    cpus: 1
+    memory: 2.3
+    network: 1
+- constraints:
+    node:
+      layer: edge-river
+  link: 1
+  model: m1
+  resources:
+    cpus: 2
+    memory: 3.5
+    network: 30
+- constraints:
+    node:
+      layer: cloud-aws
+  link: 0
+  model: m2
+  resources:
+    cpus: 2
+    memory: 2.8
+    network: 17
+- constraints:
+    node:
+      layer: premises-tecnalia700
+  link: 0
+  model: m3
+  resources:
+    cpus: 1
+    memory: 3.9
+    network: 12
+- constraints:
+    node:
+      layer: cloud-aws
+  link: 7
+  model: m4
+  resources:
+    cpus: 2
+    memory: 3.3
+    network: 12
+- constraints:
+    node:
+      layer: any
+  link: 3
+  model: m5
+  resources:
+    cpus: 4
+    memory: 8.3
+    network: 47
+- constraints:
+    node:
+      layer: cloud-aws
+  link: 8
+  model: m6
+  resources:
+    cpus: 1
+    memory: 2.9
+    network: 25
+- constraints:
+    node:
+      layer: edge-river
+  link: 1
+  model: m7
+  resources:
+    cpus: 2
+    memory: 3.1
+    network: 31
+- constraints:
+    node:
+      layer: cloud-aws
+  link: 6
+  model: m8
+  resources:
+    cpus: 2
+    memory: 1.1
+    network: 24
+- constraints:
+    node:
+      layer: any
+  link: 7
+  model: m9
+  resources:
+    cpus: 1
+    memory: 2.7
+    network: 30
+version: '1.0'

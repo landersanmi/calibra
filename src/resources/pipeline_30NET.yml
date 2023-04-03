@@ -1,0 +1,272 @@
+pipeline:
+- constraints:
+    node:
+      layer: premises-tecnalia700
+  link: 23
+  model: m0
+  resources:
+    cpus: 5
+    memory: 9.2
+    network: 59
+- constraints:
+    node:
+      layer: any
+  link: 0
+  model: m1
+  resources:
+    cpus: 1
+    memory: 1.7
+    network: 34
+- constraints:
+    node:
+      layer: any
+  link: 6
+  model: m2
+  resources:
+    cpus: 1
+    memory: 1.5
+    network: 26
+- constraints:
+    node:
+      layer: any
+  link: 4
+  model: m3
+  resources:
+    cpus: 1
+    memory: 2.9
+    network: 28
+- constraints:
+    node:
+      layer: any
+  link: 8
+  model: m4
+  resources:
+    cpus: 8
+    memory: 14.9
+    network: 39
+- constraints:
+    node:
+      layer: any
+  link: 5
+  model: m5
+  resources:
+    cpus: 1
+    memory: 4.0
+    network: 15
+- constraints:
+    node:
+      layer: premises-tecnalia101
+  link: 14
+  model: m6
+  resources:
+    cpus: 2
+    memory: 2.3
+    network: 21
+- constraints:
+    node:
+      layer: premises-tecnalia101
+  link: 22
+  model: m7
+  resources:
+    cpus: 2
+    memory: 3.6
+    network: 26
+- constraints:
+    node:
+      layer: any
+  link: 1
+  model: m8
+  resources:
+    cpus: 1
+    memory: 2.2
+    network: 31
+- constraints:
+    node:
+      layer: cloud-azure
+  link: 29
+  model: m9
+  resources:
+    cpus: 2
+    memory: 1.5
+    network: 26
+- constraints:
+    node:
+      layer: any
+  link: 21
+  model: m10
+  resources:
+    cpus: 1
+    memory: 2.2
+    network: 21
+- constraints:
+    node:
+      layer: any
+  link: 12
+  model: m11
+  resources:
+    cpus: 6
+    memory: 14.1
+    network: 77
+- constraints:
+    node:
+      layer: premises-tecnalia700
+  link: 14
+  model: m12
+  resources:
+    cpus: 1
+    memory: 3.8
+    network: 25
+- constraints:
+    node:
+      layer: any
+  link: 19
+  model: m13
+  resources:
+    cpus: 2
+    memory: 2.9
+    network: 27
+- constraints:
+    node:
+      layer: cloud-azure
+  link: 0
+  model: m14
+  resources:
+    cpus: 1
+    memory: 2.4
+    network: 32
+- constraints:
+    node:
+      layer: any
+  link: 25
+  model: m15
+  resources:
+    cpus: 1
+    memory: 1.5
+    network: 22
+- constraints:
+    node:
+      layer: any
+  link: 9
+  model: m16
+  resources:
+    cpus: 1
+    memory: 2.4
+    network: 27
+- constraints:
+    node:
+      layer: any
+  link: 2
+  model: m17
+  resources:
+    cpus: 2
+    memory: 3.9
+    network: 19
+- constraints:
+    node:
+      layer: any
+  link: 13
+  model: m18
+  resources:
+    cpus: 2
+    memory: 2.2
+    network: 30
+- constraints:
+    node:
+      layer: any
+  link: 6
+  model: m19
+  resources:
+    cpus: 16
+    memory: 209.6
+    network: 180
+- constraints:
+    node:
+      layer: premises-tecnalia700
+  link: 28
+  model: m20
+  resources:
+    cpus: 2
+    memory: 3.2
+    network: 19
+- constraints:
+    node:
+      layer: premises-tecnalia700
+  link: 23
+  model: m21
+  resources:
+    cpus: 2
+    memory: 4.0
+    network: 2
+- constraints:
+    node:
+      layer: cloud-azure
+  link: 10
+  model: m22
+  resources:
+    cpus: 1
+    memory: 2.1
+    network: 18
+- constraints:
+    node:
+      layer: any
+  link: 18
+  model: m23
+  resources:
+    cpus: 2
+    memory: 2.4
+    network: 0
+- constraints:
+    node:
+      layer: cloud-azure
+  link: 11
+  model: m24
+  resources:
+    cpus: 2
+    memory: 3.5
+    network: 3
+- constraints:
+    node:
+      layer: cloud-azure
+  link: 12
+  model: m25
+  resources:
+    cpus: 3
+    memory: 7.0
+    network: 71
+- constraints:
+    node:
+      layer: premises-tecnalia700
+  link: 16
+  model: m26
+  resources:
+    cpus: 1
+    memory: 2.9
+    network: 5
+- constraints:
+    node:
+      layer: any
+  link: 14
+  model: m27
+  resources:
+    cpus: 7
+    memory: 5.8
+    network: 76
+- constraints:
+    node:
+      layer: premises-tecnalia700
+  link: 0
+  model: m28
+  resources:
+    cpus: 8
+    memory: 168.5
+    network: 163
+- constraints:
+    node:
+      layer: any
+  link: 8
+  model: m29
+  resources:
+    cpus: 7
+    memory: 8.5
+    network: 60
+version: '1.0'
