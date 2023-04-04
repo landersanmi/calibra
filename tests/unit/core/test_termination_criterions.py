@@ -147,6 +147,19 @@ class TestTerminationCriterions(unittest.TestCase):
             self.assertEqual(c.net_device_capacity_constraint(), 0)
             self.assertEqual(c.net_traffic_capacity_constraint(), 0)
             self.assertEqual(c.net_layers_constraint(), 0)
+            
+    def suite(self):
+        suite = unittest.TestSuite()
+        suite.addTest(self('test_stopping_by_constraints_met'))
+        suite.addTest(self('test_stopping_by_generations_after_constraints_met'))
+        suite.addTest(self('test_stopping_by_time_after_constraints_met'))
+        suite.addTest(self('test_stopping_by_time_or_generations_after_constraints_met'))
+        return suite
+        
+        
+if __name__ == "__main__":
+    runner = unittest.TextTestRunner(failfast=True)
+    runner.run(TestProblem().suite())
 
 
 
