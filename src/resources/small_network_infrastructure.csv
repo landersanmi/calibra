@@ -1,0 +1,16 @@
+﻿id;device_name;device_type;max_devices;max_network_traffic;cost;failure_prob;layer
+1;Netgear WAX218;Router;9;3600;190;1;cloud-aws
+2;Netgear WAX620;Router;8;3600;287;5;edge-river
+3;Netgear WAX630E ;Router;12;7800;373;15;premises-tecnalia700
+4;Netgear WAX630;Router;10;6000;332;1;cloud-azure
+5;Netgear WAX615;Router;7;3000;198;2;premises-tecnalia700
+6;Aruba AP-555;Router;8;6000;1735;1;edge-road
+7;Aruba Instant On AP11D;Router;5;1200;177;2;edge-road
+8;ASUS 4G-AX56;Router;6;1800;277;25;premises-tecnalia101
+9;ASUS ROG Rapture GT-AX11000;Router;9;11000;461;3;edge-river
+10;ASUS ZenWiFi XD6;Router;10;5400;238;25;premises-tecnalia101
+11;ASUS ZenWiFi XD5;Router;8;3000;149;15;edge-river
+12;ASUS ZenWiFi XT9;Router;14;7800;314;1;cloud-aws
+13;D-Link DIR-809;Router;4;750;42;1;edge-road
+14;D-Link DIR-X5460;Router;8;5400;178;2;premises-tecnalia204
+15;Linksys MR8300;Router;5;2200;129;25;cloud-azure
