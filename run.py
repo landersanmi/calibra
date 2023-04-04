@@ -32,6 +32,7 @@ from src.core.tensorboard_logger import TensorboardLogger
 
 from jmetal.util.termination_criterion import StoppingByEvaluations, StoppingByTime
 from jmetal.lab.visualization import InteractivePlot
+from jmetal.lab.visualization import chord_plot
 
 LOGGER = logging.getLogger("optimizer")
 
@@ -47,7 +48,7 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
         file_infrastructure=file_infrastructure,
         file_net_infrastructure=file_net_infrastructure,
         input_pipeline=input_pipeline,
-        termination_criterion=StoppingByTimeOrGenerationsAfterConstraintsMet(max_seconds=5, max_generations=200, logger=tensorboard_logger),
+        termination_criterion=StoppingByTimeOrGenerationsAfterConstraintsMet(max_seconds=600, max_generations=500, logger=tensorboard_logger),
         observer=WriteObjectivesToTensorboardObserver(tensorboard_logger),
         population_size=population_size,
     )
@@ -61,6 +62,8 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
     plot_front = InteractivePlot(title="Pareto front approximation", axis_labels=OBJECTIVES_LABELS)
     plot_front.plot(front, label="", filename="tmp/plots/paretos/front_plot", normalize=False)
     plot_front.plot(front, label="", filename="tmp/plots/paretos/front_plot_normalized", normalize=True)
+
+    chord_plot.chord_diagram(o.get_front(), 'auto', obj_labels=OBJECTIVES_LABELS)
 
     print("Pareto Fronts values:")
     for solution in o.get_front():
@@ -90,9 +93,9 @@ def evaluate_solution(file_solution: str):
 
 
 def generate_times(file_infrastructure: str, file_net_infrastructure:str):
-    pipelines = ['5NET', '10NET', '15NET', '20NET', '30NET']
+    pipelines = ['5NET', '10NET', '15NET', '20NET', '30NET', '40NET']
     iterations = 7
-    total_times = []
+    all_rows = []
 
     if os.path.exists(TIMES_FILENAME):
         os.remove(TIMES_FILENAME)
@@ -154,7 +157,7 @@ def generate_times(file_infrastructure: str, file_net_infrastructure:str):
             writer = csv.writer(times_file)
             writer.writerow(row)
 
-        total_times.append(row)
+        all_rows.append(row)
 
 
 def generate_pareto(file_infrastructure):

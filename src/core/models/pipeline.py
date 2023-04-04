@@ -17,9 +17,6 @@ class Parser:
     def object_hook(d):
         return namedtuple("X", d.keys())(*d.values())
 
-    def file2obj(self, data):
-        pass
-
 
 class Pipeline(Parser):
     def file2obj(self, data):

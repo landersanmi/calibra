@@ -15,9 +15,9 @@ from jmetal.core.problem import BinaryProblem
 from jmetal.core.solution import CompositeSolution, BinarySolution
 
 
-class TravelingModel(BinaryProblem):
+class DeploymentProblem(BinaryProblem):
     def __init__(self, file_infrastructure, file_network_infrastructure, input_pipeline):
-        super(TravelingModel, self).__init__()
+        super(DeploymentProblem, self).__init__()
 
         self.infra = Infrastructure(file_infrastructure).load()
         self.net_infra = NetworkInfrastructure(file_network_infrastructure).load()
@@ -124,5 +124,5 @@ class TravelingModel(BinaryProblem):
         return new_solution
 
     def get_name(self) -> str:
-        return "TravelingModel"
+        return "DeploymentProblem"
 

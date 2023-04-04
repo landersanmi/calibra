@@ -18,7 +18,7 @@ from src.core.models.infrastructure import Infrastructure
 from src.core.models.network_infrastructure import NetworkInfrastructure
 from src.core.mutation import PowerOffMutation
 from src.core.crossover import PowerOffCrossover
-from src.core.problem import TravelingModel
+from src.core.problem import DeploymentProblem
 from src.core.constants import (
     SOLUTION_DF_COLUMNS,
     OBJECTIVES_LABELS,
@@ -47,7 +47,7 @@ class Optimizer:
         self.front = None
 
     def run(self):
-        self.problem = TravelingModel(
+        self.problem = DeploymentProblem(
             file_infrastructure=self.file_infrastructure,
             file_network_infrastructure=self.file_net_infrastructure,
             input_pipeline=self.input_pipeline,
@@ -81,21 +81,6 @@ class Optimizer:
 
     def get_front(self):
         return self.front
-
-    def plot(self):
-        # Plot front
-        plot_front = Plot(
-            title="Pareto front approximation. Problem: " + self.problem.get_name(),
-            reference_front=self.problem.reference_front,
-            axis_labels=self.problem.obj_labels,
-        )
-        plot_front.plot(
-            self.front, label=self.algorithm.label, filename=self.algorithm.get_name()
-        )
-
-        # print variables and fitnesses
-        print_function_values_to_file(self.front, "FUN." + self.algorithm.label)
-        print_variables_to_file(self.front, "VAR." + self.algorithm.label)
 
     def get_best_solution(self, include_fitness_specific=False):
         objectives_and_constraints, objectives = [], []
