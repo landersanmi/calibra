@@ -24,7 +24,7 @@ from src.core.constants import (
     SOLUTION_DF_COLUMNS,
     OBJECTIVES_LABELS,
     UTOPIAN_CASE,
-    TIMES_FILENAME,
+    TESTBED_FILENAME,
     INFRASTRUCTURE_FILENAME,
     NETWORK_INFRASTRUCTURE_FILENAME,
 )
@@ -48,7 +48,7 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
         file_infrastructure=file_infrastructure,
         file_net_infrastructure=file_net_infrastructure,
         input_pipeline=input_pipeline,
-        termination_criterion=StoppingByTimeOrGenerationsAfterConstraintsMet(max_seconds=600, max_generations=500, logger=tensorboard_logger),
+        termination_criterion=StoppingByTimeOrGenerationsAfterConstraintsMet(max_seconds=600, max_generations=50, logger=tensorboard_logger),
         observer=WriteObjectivesToTensorboardObserver(tensorboard_logger),
         population_size=population_size,
     )
@@ -92,25 +92,23 @@ def evaluate_solution(file_solution: str):
     print(f"Goals.Network Fail Probability = {e.network_fail_probability()}")
 
 
-def generate_times(file_infrastructure: str, file_net_infrastructure:str):
+def execute_testbed(file_infrastructure: str, file_net_infrastructure:str, iterations: int):
     pipelines = ['5NET', '10NET', '15NET', '20NET', '30NET', '40NET']
-    iterations = 7
-    all_rows = []
+    pipelines = ['5NET']
 
-    if os.path.exists(TIMES_FILENAME):
-        os.remove(TIMES_FILENAME)
+    if os.path.exists(TESTBED_FILENAME):
+        os.remove(TESTBED_FILENAME)
 
     columnames = list()
     columnames.append("pipeline")
-    for i in range(iterations):
-        columnames.append(str(i))
-    columnames.append("avg_time")
-    columnames.append("std_deviation")
+    #for i in range(iterations):
+        #columnames.append(str(i))
+    columnames.append("avg±std_constraints_time")
+    columnames.append("avg±std_optimization_time")
     for objective in OBJECTIVES_LABELS:
         columnames.append(objective.replace(" ", "_").lower())
-    columnames.append("avg_opt_time")
 
-    with open(TIMES_FILENAME, "w", newline='') as times_file:
+    with open(TESTBED_FILENAME, "w", newline='') as times_file:
         writer = csv.writer(times_file)
         writer.writerow(columnames)
 
@@ -120,10 +118,11 @@ def generate_times(file_infrastructure: str, file_net_infrastructure:str):
             input_pipeline = input_data_file.read()
         
         population_size = 200
-        row = list()
-        row.append(p)
+        constraints_times = []
         objectives = []
         opt_times = []
+        row = list()
+        row.append(p)
 
         for i in range(iterations):
             tensorboard_logger = TensorboardLogger(algo_name=str(p) + '[' + str(i) + ']')
@@ -138,26 +137,28 @@ def generate_times(file_infrastructure: str, file_net_infrastructure:str):
             )
             optimizer.run()
 
-            row.append(optimizer.termination_criterion.seconds_to_met_constraints)
+            constraints_times.append(optimizer.termination_criterion.seconds_to_met_constraints)
             best_sol = optimizer.get_best_solution(include_fitness_specific=False)[0]
             print("Best solution ID: ", best_sol)
             objectives.append(optimizer.get_front()[best_sol].objectives)
             opt_times.append(optimizer.termination_criterion.total_seconds)
 
-        times = list([float(time) for time in row[1:]])
-        row.append(str(sum(times)/int(iterations)))
-        row.append(str(np.std(times)))
+        #times = list([float(time) for time in row[1:]])
+        avg_constraints_times = str(np.round(sum(constraints_times)/iterations, 4))
+        std_constraints_times = str(np.round(np.std(constraints_times), 4))
+        row.append('{} ± {} s'.format(avg_constraints_times, std_constraints_times))
 
-        objectives = np.transpose(objectives).sum(axis=1)/iterations
-        for objective in objectives:
-            row.append(str(objective))
-        row.append(str(sum(opt_times)/iterations))
+        avg_optimization_times = str(np.round(sum(opt_times)/iterations, 4))
+        std_optimization_times = str(np.round(np.std(opt_times), 4))
+        row.append('{} ± {} s'.format(avg_optimization_times, std_optimization_times))
 
-        with open(TIMES_FILENAME, "a", newline='') as times_file:
-            writer = csv.writer(times_file)
+        objectives_avg = np.transpose(objectives).sum(axis=1)/iterations
+        for objective in objectives_avg:
+            row.append(str(np.round(objective, 6)).replace('.', ','))
+
+        with open(TESTBED_FILENAME, "a", newline='') as testbed_file:
+            writer = csv.writer(testbed_file)
             writer.writerow(row)
-
-        all_rows.append(row)
 
 
 def generate_pareto(file_infrastructure):
@@ -219,9 +220,10 @@ def main():
     )
     required.add_argument(
         "-t",
-        "--times",
-        action="store_true",
-        help="Generate time metrics",
+        "--testbed",
+        type=int,
+        default=None,
+        help="Indicate the Nº of executions for each case of the testbed",
         required=False,
     )
     required.add_argument(
@@ -236,7 +238,7 @@ def main():
         "--memory",
         type=str,
         default=None,
-        help="Indicate number of models (e.g., 5, 10, 20, 40, 80)",
+        help="Indicate number of models (e.g., 5NET, 10NET, 20NET, 40NET, 80NET)",
         required=False,
     )
     required.add_argument(
@@ -262,10 +264,10 @@ def main():
         level=logging.INFO, format="%(asctime)s %(levelname)-8s %(message)s"
     )
 
-    if args.times:
-        generate_times(file_infrastructure=INFRASTRUCTURE_FILENAME,
-                       file_net_infrastructure=NETWORK_INFRASTRUCTURE_FILENAME
-        )
+    if args.testbed:
+        execute_testbed(file_infrastructure=INFRASTRUCTURE_FILENAME,
+                        file_net_infrastructure=NETWORK_INFRASTRUCTURE_FILENAME,
+                        iterations=args.testbed)
 
     if args.pareto:
         generate_pareto(
