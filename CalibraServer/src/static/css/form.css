@@ -1,0 +1,324 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html, .container-fluid{
+    height: 100vh;
+}
+
+/*Background color*/
+#grad1 {
+    background: radial-gradient(50% 113.13% at 50% 50%, #FF5000 0%, rgba(255, 80, 0, 0.60));
+}
+
+/*form styles*/
+#msform {
+    text-align: center;
+    position: relative;
+    margin-top: 25px;
+}
+
+#msform fieldset .form-card {
+    background: white;
+    border: 0 none;
+    border-radius: 0px;
+    /*box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.2);*/
+    padding: 20px 40px 20px 40px;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0 0 20px 0;
+
+    /*stacking fieldsets above each other*/
+    position: relative;
+}
+
+#msform fieldset {
+    background: white;
+    border: 0 none;
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding-bottom: 20px;
+
+    /*stacking fieldsets above each other*/
+    position: relative;
+}
+
+/*Hide all except first fieldset*/
+#msform fieldset:not(:first-of-type) {
+    display: none;
+}
+
+#msform fieldset .form-card {
+    text-align: left;
+    color: #9E9E9E;
+}
+
+#parameters_title {
+    margin-bottom: 15px;
+}
+
+.range-slider {
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+
+.form-check-label {
+  margin-left: 10px;
+}
+
+.form-label {
+  font-weight: 500;
+}
+
+.form-range {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 10px;
+  background-color: #d3d3d3;
+  border-radius: 5px;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.form-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background-color: #FF8000;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background-color: #FF8000;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+#msform .action-button {
+    width: 100px;
+    background: #FF8000;
+    font-weight: bold;
+    color: white;
+    border: 0 none;
+    border-radius: 0px;
+    cursor: pointer;
+    padding: 10px 5px;
+    margin: 10px 5px;
+}
+
+#runtime_visualizer_redirect_btn {
+    width: 210px !important;
+}
+
+#msform .action-button[disabled] {
+    background-color: darkgrey;
+    color: #ffffff;
+    cursor: not-allowed;
+}
+
+#msform .action-button:hover, #msform .action-button:focus {
+    box-shadow: 0 0 0 2px white, 0 0 0 3px #FF8000;
+}
+
+/*Previous Buttons*/
+#msform .action-button-previous {
+    width: 100px;
+    background: lightgrey;
+    font-weight: bold;
+    color: white;
+    border: 0 none;
+    border-radius: 0px;
+    cursor: pointer;
+    padding: 10px 5px;
+    margin: 10px 5px;
+}
+
+#msform .action-button-previous:hover, #msform .action-button-previous:focus {
+    box-shadow: 0 0 0 2px white, 0 0 0 3px lightgrey;
+}
+
+#calibra_img {
+    width: 360px;
+    height: 140px;
+}
+/*The background card*/
+.card {
+    z-index: 0;
+    border: none;
+    border-radius: 0.5rem;
+    position: relative;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/*FieldSet headings*/
+.fs-title {
+    font-size: 25px;
+    color: #2C3E50;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-align: left;
+}
+
+/*progressbar*/
+#progressbar {
+    padding-left: 0px;
+    margin-bottom: 35px;
+    overflow: hidden;
+    color: lightgrey;
+}
+
+#progressbar .active {
+    color: #000000;
+}
+
+#progressbar li {
+    list-style-type: none;
+    font-size: 12px;
+    width: 20%;
+    float: left;
+    position: relative;
+    padding-bottom: 50px;
+}
+
+/*Icons in the ProgressBar*/
+#progressbar #pipeline_circle:before {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #FF8000;
+}
+
+.circle-item {
+  display: flex;
+  justify-content: center;
+}
+
+.circle {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  background-color: lightgrey;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.active .circle {
+  background-color: #FF8000;
+}
+
+.circle img {
+  max-width: 70%;
+  max-height: 70%;
+}
+
+.circle-text {
+  position: absolute;
+  top: 80px;
+  font-size: 12.5px;
+  text-align: center;
+  width: 110%;
+}
+
+/*ProgressBar before any progress*/
+#progressbar li:before {
+    width: 50px;
+    height: 50px;
+    line-height: 45px;
+    display: block;
+    font-size: 18px;
+    color: #ffffff;
+    background: lightgray;
+    border-radius: 50%;
+    margin: 0 auto 10px auto;
+    padding: 2px;
+}
+
+/*ProgressBar connectors*/
+#progressbar li:after {
+    content: '';
+    width: 100%;
+    height: 6px;
+    background: lightgray;
+    position: absolute;
+    left: 0;
+    top: 35px;
+    z-index: -1;
+}
+
+/*Color number of the step and the connector before it*/
+#progressbar li.active:before, #progressbar li.active:after {
+    background: #FF8000;
+}
+
+#ex1Slider .slider-selection {
+	background: #BABABA;
+}
+
+/*Fit image in bootstrap div*/
+.fit-image{
+    width: 100%;
+    object-fit: cover;
+}
+
+
+/* DRAG & DROP */
+/* Bootstrap 5 CSS and icons included */
+:root {
+  --colorPrimaryNormal: #00b3bb;
+  --colorPrimaryDark: #00979f;
+  --colorPrimaryGlare: #ffb000;
+  --colorPrimaryHalf: #ff8000;
+  --colorPrimaryQuarter: #bfecee;
+  --colorPrimaryEighth: #dff5f7;
+  --colorPrimaryPale: #f3f5f7;
+  --colorPrimarySeparator: #f3f5f7;
+  --colorPrimaryOutline: #dff5f7;
+  --colorButtonNormal: #00b3bb;
+  --colorButtonHover: #00cdd7;
+  --colorLinkNormal: #00979f;
+  --colorLinkHover: #00cdd7;
+}
+
+
+.upload_dropZone {
+  color: #0f3c4b;
+  background-color: #F1F1F1 !important; /*var(--colorPrimaryPale, #c8dadf);*/
+  outline: 2px dashed var(--colorPrimaryHalf);
+  /*outline-offset: -12px;*/
+  transition:
+    outline-offset 0.2s ease-out,
+    outline-color 0.3s ease-in-out,
+    background-color 0.2s ease-out;
+}
+.upload_dropZone.highlight {
+  outline-offset: -4px;
+  outline-color: var(--colorPrimaryNormal, #0576bd);
+  background-color: var(--colorPrimaryEighth, #c8dadf);
+}
+.upload_svg {
+  fill: var(--colorPrimaryNormal, #0576bd);
+}
+.btn-upload {
+  color: #fff;
+  background-color: var(--colorPrimaryHalf);
+}
+.btn-upload:hover,
+.btn-upload:focus {
+  color: #fff;
+  background-color: var(--colorPrimaryGlare);
+}
+.upload_img {
+  width: calc(33.333% - (2rem / 3));
+  object-fit: contain;
+}

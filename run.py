@@ -94,8 +94,7 @@ def evaluate_solution(file_solution: str):
 
 def execute_testbed(file_infrastructure: str, file_net_infrastructure:str, iterations: int):
     pipelines = ['5NET', '10NET', '15NET', '20NET', '30NET', '40NET']
-    pipelines = ['5NET']
-
+    #fpipelines = ['5NET']
     if os.path.exists(TESTBED_FILENAME):
         os.remove(TESTBED_FILENAME)
 
@@ -106,7 +105,7 @@ def execute_testbed(file_infrastructure: str, file_net_infrastructure:str, itera
     columnames.append("avg±std_constraints_time")
     columnames.append("avg±std_optimization_time")
     for objective in OBJECTIVES_LABELS:
-        columnames.append(objective.replace(" ", "_").lower())
+        columnames.append("avg " + objective.replace(" ", "_").lower())
 
     with open(TESTBED_FILENAME, "w", newline='') as times_file:
         writer = csv.writer(times_file)

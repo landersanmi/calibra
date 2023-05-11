@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/form.css') }}" >
+{% endblock %}
+
+{% block js %}
+    <script src="{{ url_for('static', filename='js/form.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid" id="grad1">
+    <div class="row justify-content-center mt-0" style="height: 100%">
+        <div class="col-sm-10 col-md-4 col-lg-3 text-center" style="display:flex;align-items: center;">
+            <div class="card pt-4 mt-3 mb-3" style="margin: 0 auto;">
+                <div class = "row">
+                    <div class = "col d-flex justify-content-center" id="title_col">
+                        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Calibra logo" id="calibra_img">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mx-0">
+                        <form id="msform" method="POST" action="/optimize" enctype="multipart/form-data">
+
+                            <ul id="progressbar">
+                                <li class="circle-item active">
+                                    <div class="circle">
+                                        <img src="{{ url_for('static', filename='img/pipeline.png') }}" alt="Pipeline Icon">
+                                    </div>
+                                    <div class="circle-text"><strong>Pipeline</strong></div>
+                                </li>
+                                <li class="circle-item">
+                                    <div class="circle">
+                                        <img src="{{ url_for('static', filename='img/computing_infra.png') }}" alt="Computing Infra Icon">
+                                    </div>
+                                    <div class="circle-text"><strong>Computing Infrastructure</strong></div>
+                                </li>
+                                <li class="circle-item">
+                                    <div class="circle">
+                                        <img src="{{ url_for('static', filename='img/net_infra.png') }}" alt="Network Infra Icon">
+                                        <div class="circle-text"><strong>Network Infrastructure</strong></div>
+                                    </div>
+                                </li>
+                                <li class="circle-item">
+                                    <div class="circle">
+                                        <img src="{{ url_for('static', filename='img/config.png') }}" alt="Config Icon">
+                                        <div class="circle-text"><strong>Parameters</strong></div>
+                                    </div>
+                                </li>
+                                <li class="circle-item">
+                                    <div class="circle">
+                                        <img src="{{ url_for('static', filename='img/check.png') }}" alt="Check Icon">
+                                        <div class="circle-text"><strong>Optimize</strong></div>
+                                    </div>
+
+                                </li>
+                            </ul>
+
+                            <fieldset>
+                                <div class="form-card">
+                                      <fieldset class="upload_dropZone text-center yml">
+                                          <svg class="upload_svg" width="60" height="60" aria-hidden="true">
+                                            <use href="#icon-imageUpload"></use>
+                                          </svg>
+                                          <p class="small my-2">Drag &amp; Drop the <strong>analytical pipeline in PADL format</strong> (.yml) <br><i>or</i></p>
+                                          <input id="upload_pipeline" data-post-name="upload_pipeline" class="position-absolute invisible" type="file"/>
+                                          <label class="btn btn-upload mb-3" for="upload_pipeline">Choose file</label>
+                                          <div class="upload_gallery d-flex flex-wrap justify-content-center gap-3 mb-0"></div>
+                                      </fieldset>
+                                </div>
+                                <input id="next_btn_pipeline" type="button" name="next" class="next action-button disabled" value="Next Step"/>
+                            </fieldset>
+
+                            <fieldset>
+                                <div class="form-card">
+                                      <fieldset class="upload_dropZone text-center csv">
+                                          <svg class="upload_svg" width="60" height="60" aria-hidden="true">
+                                            <use href="#icon-imageUpload"></use>
+                                          </svg>
+                                          <p class="small my-2">Drag &amp; Drop the <strong>computing infrastructure in CSV format</strong><br><i>or</i></p>
+                                          <input id="upload_computing_infra" data-post-name="image_background" class="position-absolute invisible" type="file"/>
+                                          <label class="btn btn-upload mb-3" for="upload_computing_infra">Choose file</label>
+                                          <div class="upload_gallery d-flex flex-wrap justify-content-center gap-3 mb-0"></div>
+                                      </fieldset>
+                                </div>
+                                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                                <input id="next_btn_computing_infra" type="button" name="next" class="next action-button" value="Next Step"/>
+                            </fieldset>
+
+                            <fieldset>
+                                <div class="form-card">
+                                     <fieldset class="upload_dropZone text-center csv">
+                                         <svg class="upload_svg" width="60" height="60" aria-hidden="true">
+                                             <use href="#icon-imageUpload"></use>
+                                         </svg>
+                                         <p class="small my-2">Drag &amp; Drop the <strong>network infrastructure in CSV format</strong><br><i>or</i></p>
+                                         <input id="upload_network_infra" data-post-name="image_background" class="position-absolute invisible" type="file"/>
+                                         <label class="btn btn-upload mb-3" for="upload_network_infra">Choose file</label>
+                                         <div class="upload_gallery d-flex flex-wrap justify-content-center gap-3 mb-0"></div>
+                                    </fieldset>
+                                </div>
+                                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                                <input id="next_btn_network_infra" type="button" name="next" class="next action-button" value="Next Step"/>
+                            </fieldset>
+
+                            <fieldset>
+                                <div class="form-card">
+                                    <h2 id="parameters_title">Parameters settings</h2>
+
+                                    <div class="range-slider">
+                                        <label for="population_range" class="form-label">Population Size:</label>
+                                        <span id="population_value">200</span>
+                                        <input type="range" min="20" max="5000" value="200" step="10" class="form-range" id="population_range">
+                                    </div>
+
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="stopping-condition-group" id="generations_check" checked>
+                                        <label class="form-check-label" for="generations_check">Stop by Generations</label>
+                                    </div>
+                                    <div class="range-slider">
+                                        <label for="generations_range" class="form-label">Generations:</label>
+                                        <span id="generations_value">1000</span>
+                                        <input type="range" min="10" max="10000" value="1000" step="10" class="form-range" id="generations_range">
+                                    </div>
+
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="stopping-condition-group" id="time_check">
+                                        <label class="form-check-label" for="time_check">Stop by Time</label>
+                                    </div>
+                                    <div class="range-slider">
+                                        <label for="time_range" class="form-label">Minutes:</label>
+                                        <span id="time_value">5</span>
+                                        <input type="range" min="1" max="2880" value="5" step="1" class="form-range" id="time_range" disabled>
+                                    </div>
+                                </div>
+
+                                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                                <input type="submit" name="optimize" class="next action-button" value="Optimize"/>
+                            </fieldset>
+
+                            <fieldset>
+                                <div class = "row">
+                                    <div class = "col d-flex justify-content-center" id="title_col">
+                                        <img src="{{ url_for('static', filename='img/loading3.gif') }}" alt="Loading GIF" id="loading_img" style="width: 70%;">
+                                    </div>
+                                </div>
+                                <p>Optimizing and generating report...</p>
+                                <input id="runtime_visualizer_redirect_btn" type="button" name="runtime_visualizer" class="next action-button" value="Open Runtime Visualizer"/>
+                            </fieldset>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
