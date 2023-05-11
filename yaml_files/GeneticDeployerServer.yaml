@@ -1,0 +1,123 @@
+openapi: 3.0.1
+
+info:
+  title: Genetic Deployer Microservice API
+  description: This API handles the optimization of the analytical models deployments with 
+               NSGA-III Genetic Algorithm, then returns the result report in JSON format.
+  version: 1.0.1
+
+servers:
+  - url: /
+    description: Development Server
+
+tags:
+  - name: Optimization
+    description: Functionality related with optimization
+
+paths:
+  /api/v1/optimize:
+    post:
+      summary: Post optimization
+      operationId: post-optimization
+      description: Upload three files and parameters to generate a deployment optimization report
+      tags: ["Optimization"]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/optimization"
+
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deployment_report"
+        '400':
+          description: Invalid request or files extensions
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    optimization:
+      type: object
+      properties:
+        pipeline:
+          type: string
+          format: binary
+          description: Analytical pipeline definition YAML file
+        computing_infra:
+          type: string
+          format: binary
+          description: Computing infrastructure definition CSV file
+        network_infra:
+          type: string
+          format: binary
+          description: Network infrastructure definition CSV file
+        population_size:
+          type: integer
+          description: Number of selected individuals in the population
+        generations_check:
+          type: boolean
+          description: Indicates to optimizer if stop by generations
+        max_generations:
+          type: integer
+          description: Number of generations to optimize after meting constraints
+        time_check:
+          type: boolean
+          description: Indicates to optimizer if stop by time
+        max_time:
+          type: integer
+          description: Number of seconds to optimize after meting constraints
+
+    deployment_report:
+      type: object
+      properties:
+        pareto_front_size:
+          type: integer
+          description: Number of solutions that are in the Pareto front
+        total_time:
+          type: integer
+          description: Total seconds of optimization execution
+        time_to_met_constraints:
+          type: integer
+          description: Seconds took by optimization process execution for achieving the satisfaction of all defined constraints
+        num_models:
+          type: integer
+          description: Number of Analytical Models that compose the analytical pipeline file
+        num_computing_devices:
+          type: integer
+          description: Number of Computing Devices that compose the computing infrastructure file
+        num_net_devices:
+          type: integer
+          description: Number of Network Devices that compose the network infrastructure file
+        report_date:
+          type: string
+          description: Datetime os the report generation
+        best_solution:
+          type: object
+          description: Solution with best value for all objectives functions
+        best_sol_performance_fitness:
+          type: object
+          description: Solution with best value for Performance objective function
+        best_sol_cost_fitness:
+          type: object
+          description: Solution with best value for Cost objective function
+        best_sol_net_cost_fitness:
+          type: object
+          description: Solution with best value for Network Cost objective function
+        best_sol_net_fail_prob_fitness:
+          type: object
+          description: Solution with best value for Network Failure Probability objective function
+        population_size:
+          type: integer
+          description: Number of selected individuals in the population
+        max_generations:
+          type: integer
+          description: Number of selected generations to execute the optimization after constraints met
+        max_time:
+          type: integer
+          description: Number of selected seconds to execute the optimization after constraints met
