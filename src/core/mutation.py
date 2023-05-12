@@ -26,7 +26,7 @@ class PowerOffMutation(Mutation[CompositeSolution]):
             self.bit_flip(number_of_devices, number_of_models, solution)
         self.deployment_mutation(number_of_devices, number_of_models, solution)
         self.irrelevancy_mutation(number_of_devices, number_of_models, solution)
-        self.layer_mutation(number_of_devices, number_of_models, solution)
+        self.layer_mutation(number_of_devices, solution)
 
         #---- PARTE B ----#
         self.network_mutation(number_of_devices, number_of_net_devices, solution)
@@ -91,7 +91,6 @@ class PowerOffMutation(Mutation[CompositeSolution]):
                     if ram_diff > 0:
                         models_ram_requirements = ram_requirements.transpose()[i]
                         models_irrelevancy_ram = models_frequencies * (models_ram_requirements / ram_diff)
-
                     models_irrelevancy = models_irrelevancy_cpu + models_irrelevancy_ram
                     most_irrelevant_models = np.argsort(models_irrelevancy)[::-1][-number_of_models:]
                     for index in most_irrelevant_models:
@@ -146,7 +145,7 @@ class PowerOffMutation(Mutation[CompositeSolution]):
                         network_sol[i][rand_net_dev] = True
         solution.variables[1].variables = network_sol.transpose()
 
-    def layer_mutation(self, number_of_devices, number_of_net_devices, solution):
+    def layer_mutation(self, number_of_devices, solution):
         device_sol = np.array(solution.variables[0].variables).transpose()
         models_layers = self.problem.pipe.layer.to_numpy()
 

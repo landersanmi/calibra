@@ -9,10 +9,10 @@ import numpy as np
 import os
 
 import matplotlib.pylab as pl
+import matplotlib.ticker as plticker
 from mpl_toolkits.mplot3d import Axes3D
 from math import sqrt
 from matplotlib.colors import LinearSegmentedColormap
-
 
 def pareto2():
     filename = "/tmp/pareto"
@@ -229,8 +229,7 @@ def memory():
 
 
 def get_single_color(data, i: int, j: int, x: float, y: float):
-    #colors = ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3"]
-    colors = ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#9b19f5", "#ffa300"]
+    colors = ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3"]
 
     cm = LinearSegmentedColormap.from_list("", [colors[i], colors[j]])
 
@@ -242,11 +241,11 @@ def get_single_color(data, i: int, j: int, x: float, y: float):
     x_max = data[:, j].max()
     x_min = data[:, j].min()
     for x2, y2 in zip(data[:, j], data[:, i]):
-        if i == 2 and y2 < y and x2 > x:
+        if i == 0 and y2 > y and x2 < x:
             return "lightgrey"
-        elif j == 2 and x2 < x and y2 > y:
+        elif j == 0 and x2 > x and y2 < y:
             return "lightgrey"
-        elif i != 2 and j != 2 and x2 > x and y2 > y:
+        elif i != 0 and j != 0 and x2 < x and y2 < y:
             return "lightgrey"
     distance1 = sqrt((x_min - x) ** 2 + (y_max - y) ** 2)
     distance2 = sqrt((x_max - x) ** 2 + (y_min - y) ** 2)
@@ -261,7 +260,7 @@ def get_colors(data, i: int, j: int):
 
 def pareto(filename: str):
     OBJECTIVES_LABELS = ["Model Perf", "Cost", "Net Cost", "Net Fail Prob"]
-    file = f"tmp/data/paretos/pareto[{filename}]"
+    file = f"tmp/data/paretos/pareto[{filename}].txt"
     if not os.path.isfile(file):
         logging.error(f"There is no {file} file.")
         return
@@ -276,31 +275,22 @@ def pareto(filename: str):
     for i in range(num_objectives):
         for j in range(num_objectives):
             my_colors = list(get_colors(data=data, j=j, i=i))
-
+            y_max = data[:, i].max()
+            y_min = data[:, i].min()
+            x_max = data[:, j].max()
+            x_min = data[:, j].min()
+            axis[i, j].set_xlim([x_min-0.01, x_max+0.01])
+            axis[i, j].set_ylim([y_min-0.01, y_max+0.01])
             axis[i, j].scatter(data[:, j], data[:, i], c=my_colors)
-            axis[i, j].set_xticklabels([])
-            axis[i, j].set_yticklabels([])
+            #axis[i, j].set_xticklabels([label for label in np.arange(x_min, x_max)])
+            #axis[i, j].set_yticklabels([label for label in np.arange(y_min, y_max)])
             if j == 0:
                 axis[i, j].set_ylabel(OBJECTIVES_LABELS[i])
             if i == num_objectives-1:
                 axis[i, j].set_xlabel(OBJECTIVES_LABELS[j])
-
     plt.tight_layout()
     # Combine all the operations and display
     plt.savefig(f"tmp/plots/paretos/Pareto[{filename}].svg")
-
-    # set Y labels
-    #axis[0, 0].set_ylabel(labels[0])
-    #axis[1, 0].set_ylabel(labels[1])
-    #axis[2, 0].set_ylabel(labels[2])
-    #axis[3, 0].set_ylabel(labels[3])
-
-    # set X labels
-    #axis[3, 0].set_xlabel(labels[0])
-    #axis[3, 1].set_xlabel(labels[1])
-    #axis[3, 2].set_xlabel(labels[2])
-    #axis[3, 3].set_xlabel(labels[3])
-
 
 def main():
     text = "This is the plotter."

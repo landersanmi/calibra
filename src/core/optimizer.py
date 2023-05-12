@@ -97,8 +97,8 @@ class Optimizer:
         row = pd.Series(row_dict)
         objectives_df = pd.concat([objectives_df, row.to_frame().T], ignore_index=True)
 
-        objectives_df['cosine_similarity'] = objectives_df.apply(lambda row: spatial.distance.cosine(row.values, objectives_df.iloc[-1]), axis=1)
-        objectives_df = objectives_df.sort_values(by=['cosine_similarity'], ascending=True)
+        objectives_df['cosine_distance'] = objectives_df.apply(lambda row: spatial.distance.cosine(row.values, objectives_df.iloc[-1]), axis=1)
+        objectives_df = objectives_df.sort_values(by=['cosine_distance'], ascending=True)
 
         best_solutions = [objectives_df.head(2)[1:2].index]
 

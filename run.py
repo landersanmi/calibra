@@ -37,7 +37,7 @@ from jmetal.lab.visualization import chord_plot
 LOGGER = logging.getLogger("optimizer")
 
 
-def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str):
+def compete(file_infrastructure: str, file_net_infrastructure: str, pipeline: str):
     file_pipeline = PIPELINE_FILENAME.format(pipeline=pipeline)
     population_size = 200
 
@@ -48,7 +48,7 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
         file_infrastructure=file_infrastructure,
         file_net_infrastructure=file_net_infrastructure,
         input_pipeline=input_pipeline,
-        termination_criterion=StoppingByTimeOrGenerationsAfterConstraintsMet(max_seconds=600, max_generations=50, logger=tensorboard_logger),
+        termination_criterion=StoppingByTimeOrGenerationsAfterConstraintsMet(max_seconds=2400, max_generations=200, logger=tensorboard_logger),
         observer=WriteObjectivesToTensorboardObserver(tensorboard_logger),
         population_size=population_size,
     )
@@ -59,8 +59,9 @@ def compete(file_infrastructure: str, file_net_infrastructure:str, pipeline: str
         front[i].objectives[0] = abs(solution.objectives[0])
         print(front[i].objectives)
 
-    plot_front = InteractivePlot(title="Pareto front approximation", axis_labels=OBJECTIVES_LABELS)
+    plot_front = InteractivePlot(title="Front Solutions Values", axis_labels=OBJECTIVES_LABELS)
     plot_front.plot(front, label="", filename="tmp/plots/paretos/front_plot", normalize=False)
+    plot_front = InteractivePlot(title="Front Solutions Values - Normalized", axis_labels=OBJECTIVES_LABELS)
     plot_front.plot(front, label="", filename="tmp/plots/paretos/front_plot_normalized", normalize=True)
 
     chord_plot.chord_diagram(o.get_front(), 'auto', obj_labels=OBJECTIVES_LABELS)
@@ -94,7 +95,6 @@ def evaluate_solution(file_solution: str):
 
 def execute_testbed(file_infrastructure: str, file_net_infrastructure:str, iterations: int):
     pipelines = ['5NET', '10NET', '15NET', '20NET', '30NET', '40NET']
-    #fpipelines = ['5NET']
     if os.path.exists(TESTBED_FILENAME):
         os.remove(TESTBED_FILENAME)
 
@@ -160,16 +160,20 @@ def execute_testbed(file_infrastructure: str, file_net_infrastructure:str, itera
             writer.writerow(row)
 
 
-def generate_pareto(file_infrastructure):
-    file_pipeline = PIPELINE_FILENAME.format(pipeline=40)
-    population_size = 100
+def generate_pareto(file_infrastructure, file_net_infrastructure):
+    pipeline = '10NET'
+    file_pipeline = PIPELINE_FILENAME.format(pipeline=pipeline)
+    population_size = 500
+
     with open(file_pipeline, "r") as input_data_file:
         input_pipeline = input_data_file.read()
+    tensorboard_logger = TensorboardLogger(algo_name=pipeline)
     o = Optimizer(
         file_infrastructure=file_infrastructure,
+        file_net_infrastructure=file_net_infrastructure,
         input_pipeline=input_pipeline,
-        # termination_criterion=StoppingByFullPareto(offspring_size=population_size),
-        termination_criterion=StoppingByTime(max_seconds=600),
+        termination_criterion=StoppingByTimeOrGenerationsAfterConstraintsMet(max_seconds=3600, max_generations=1000, logger=tensorboard_logger),
+        observer=WriteObjectivesToTensorboardObserver(tensorboard_logger),
         population_size=population_size,
     )
     o.run()
@@ -270,7 +274,9 @@ def main():
 
     if args.pareto:
         generate_pareto(
-            file_infrastructure=INFRASTRUCTURE_FILENAME)
+            file_infrastructure=INFRASTRUCTURE_FILENAME,
+            file_net_infrastructure = NETWORK_INFRASTRUCTURE_FILENAME
+        )
 
     if args.fitnesses:
         generate_fitnesses(
