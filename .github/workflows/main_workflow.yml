@@ -22,9 +22,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          if [ -f GeneticDeployerServer/requirements.txt ]; then pip install -r GeneticDeployerServer/requirements.txt; fi
-          if [ -f GeneticDeployerServer/test-requirements.txt ]; then pip install -r GeneticDeployerServer/test-requirements.txt; fi
-          if [ -f CalibraServer/requirements.txt ]; then pip install -r CalibraServer/requirements.txt; fi
+          # if [ -f GeneticDeployerServer/requirements.txt ]; then pip install -r GeneticDeployerServer/requirements.txt; fi
+          # if [ -f GeneticDeployerServer/test-requirements.txt ]; then pip install -r GeneticDeployerServer/test-requirements.txt; fi
+          # if [ -f CalibraServer/requirements.txt ]; then pip install -r CalibraServer/requirements.txt; fi
 
       - name: Generate Codecov Report
         run: |
