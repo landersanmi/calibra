@@ -14,9 +14,11 @@ class Optimization(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, pipeline: str=None, computing_infra: str=None, network_infra: str=None, population_size: int=None, generations_check: bool=None, max_generations: int=None, time_check: bool=None, max_time: int=None):  # noqa: E501
+    def __init__(self, id: str=None, pipeline: str=None, computing_infra: str=None, network_infra: str=None, population_size: int=None, generations_check: bool=None, max_generations: int=None, time_check: bool=None, max_time: int=None):  # noqa: E501
         """Optimization - a model defined in Swagger
 
+        :param id: The id of this Optimization.  # noqa: E501
+        :type id: str
         :param pipeline: The pipeline of this Optimization.  # noqa: E501
         :type pipeline: str
         :param computing_infra: The computing_infra of this Optimization.  # noqa: E501
@@ -35,6 +37,7 @@ class Optimization(Model):
         :type max_time: int
         """
         self.swagger_types = {
+            'id': str,
             'pipeline': str,
             'computing_infra': str,
             'network_infra': str,
@@ -46,6 +49,7 @@ class Optimization(Model):
         }
 
         self.attribute_map = {
+            'id': 'id',
             'pipeline': 'pipeline',
             'computing_infra': 'computing_infra',
             'network_infra': 'network_infra',
@@ -55,6 +59,7 @@ class Optimization(Model):
             'time_check': 'time_check',
             'max_time': 'max_time'
         }
+        self._id = id
         self._pipeline = pipeline
         self._computing_infra = computing_infra
         self._network_infra = network_infra
@@ -74,6 +79,29 @@ class Optimization(Model):
         :rtype: Optimization
         """
         return util.deserialize_model(dikt, cls)
+
+    @property
+    def id(self) -> str:
+        """Gets the id of this Optimization.
+
+        Identifier related to the optimization, can be used for visualizing runtime info in Tensorboard  # noqa: E501
+
+        :return: The id of this Optimization.
+        :rtype: str
+        """
+        return self._id
+
+    @id.setter
+    def id(self, id: str):
+        """Sets the id of this Optimization.
+
+        Identifier related to the optimization, can be used for visualizing runtime info in Tensorboard  # noqa: E501
+
+        :param id: The id of this Optimization.
+        :type id: str
+        """
+
+        self._id = id
 
     @property
     def pipeline(self) -> str:

@@ -15,7 +15,7 @@ jobs:
       - name: Set up Python 3.x
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9.13'
+          python-version: '3.10.13'
           architecture: 'x64'
 
       - name: Install dependencies
@@ -23,10 +23,12 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           if [ -f GeneticDeployerServer/requirements.txt ]; then pip install -r GeneticDeployerServer/requirements.txt; fi
+          if [ -f GeneticDeployerServer/test-requirements.txt ]; then pip install -r GeneticDeployerServer/test-requirements.txt; fi
           if [ -f CalibraServer/requirements.txt ]; then pip install -r CalibraServer/requirements.txt; fi
 
       - name: Generate Codecov Report
-        run: coverage run --source src -m unittest
+        run: |
+          coverage run --source=src -m unittest discover tests/
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

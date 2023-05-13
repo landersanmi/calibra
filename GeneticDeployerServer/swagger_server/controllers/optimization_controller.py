@@ -5,11 +5,13 @@ from swagger_server.models.deployment_report import DeploymentReport  # noqa: E5
 from swagger_server import util
 
 
-def post_optimization(pipeline, computing_infra, network_infra, population_size, generations_check, max_generations, time_check, max_time):  # noqa: E501
+def post_optimization(id, pipeline, computing_infra, network_infra, population_size, generations_check, max_generations, time_check, max_time):  # noqa: E501
     """Post optimization
 
     Upload three files and parameters to generate a deployment optimization report # noqa: E501
 
+    :param id: 
+    :type id: str
     :param pipeline: 
     :type pipeline: strstr
     :param computing_infra: 

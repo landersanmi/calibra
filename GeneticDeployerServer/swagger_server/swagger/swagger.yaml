@@ -42,6 +42,10 @@ components:
     optimization:
       type: object
       properties:
+        id:
+          type: string
+          description: "Identifier related to the optimization, can be used for visualizing\
+            \ runtime info in Tensorboard"
         pipeline:
           type: string
           description: Analytical pipeline definition YAML file
@@ -72,6 +76,10 @@ components:
     deployment_report:
       type: object
       properties:
+        id:
+          type: string
+          description: "Identifier related to the optimization, can be used for visualizing\
+            \ runtime info in Tensorboard"
         pareto_front_size:
           type: integer
           description: Number of solutions that are in the Pareto front
@@ -135,6 +143,7 @@ components:
         best_sol_net_cost_fitness: {}
         num_models: 5
         best_sol_cost_fitness: {}
+        id: id
         best_sol_net_fail_prob_fitness: {}
         max_time: 3
         total_time: 6

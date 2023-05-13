@@ -17,13 +17,14 @@ class TestOptimizationController(BaseTestCase):
 
         Post optimization
         """
-        data = dict(pipeline='pipeline_example',
+        data = dict(id='id_example',
+                    pipeline='pipeline_example',
                     computing_infra='computing_infra_example',
                     network_infra='network_infra_example',
                     population_size=56,
-                    generations_check=True,
+                    generations_check=true,
                     max_generations=56,
-                    time_check=True,
+                    time_check=true,
                     max_time=56)
         response = self.client.open(
             '/api/v1/optimize',

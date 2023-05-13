@@ -14,9 +14,11 @@ class DeploymentReport(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, pareto_front_size: int=None, total_time: int=None, time_to_met_constraints: int=None, num_models: int=None, num_computing_devices: int=None, num_net_devices: int=None, report_date: str=None, best_solution: object=None, best_sol_performance_fitness: object=None, best_sol_cost_fitness: object=None, best_sol_net_cost_fitness: object=None, best_sol_net_fail_prob_fitness: object=None, population_size: int=None, max_generations: int=None, max_time: int=None):  # noqa: E501
+    def __init__(self, id: str=None, pareto_front_size: int=None, total_time: int=None, time_to_met_constraints: int=None, num_models: int=None, num_computing_devices: int=None, num_net_devices: int=None, report_date: str=None, best_solution: object=None, best_sol_performance_fitness: object=None, best_sol_cost_fitness: object=None, best_sol_net_cost_fitness: object=None, best_sol_net_fail_prob_fitness: object=None, population_size: int=None, max_generations: int=None, max_time: int=None):  # noqa: E501
         """DeploymentReport - a model defined in Swagger
 
+        :param id: The id of this DeploymentReport.  # noqa: E501
+        :type id: str
         :param pareto_front_size: The pareto_front_size of this DeploymentReport.  # noqa: E501
         :type pareto_front_size: int
         :param total_time: The total_time of this DeploymentReport.  # noqa: E501
@@ -49,6 +51,7 @@ class DeploymentReport(Model):
         :type max_time: int
         """
         self.swagger_types = {
+            'id': str,
             'pareto_front_size': int,
             'total_time': int,
             'time_to_met_constraints': int,
@@ -67,6 +70,7 @@ class DeploymentReport(Model):
         }
 
         self.attribute_map = {
+            'id': 'id',
             'pareto_front_size': 'pareto_front_size',
             'total_time': 'total_time',
             'time_to_met_constraints': 'time_to_met_constraints',
@@ -83,6 +87,7 @@ class DeploymentReport(Model):
             'max_generations': 'max_generations',
             'max_time': 'max_time'
         }
+        self._id = id
         self._pareto_front_size = pareto_front_size
         self._total_time = total_time
         self._time_to_met_constraints = time_to_met_constraints
@@ -109,6 +114,29 @@ class DeploymentReport(Model):
         :rtype: DeploymentReport
         """
         return util.deserialize_model(dikt, cls)
+
+    @property
+    def id(self) -> str:
+        """Gets the id of this DeploymentReport.
+
+        Identifier related to the optimization, can be used for visualizing runtime info in Tensorboard  # noqa: E501
+
+        :return: The id of this DeploymentReport.
+        :rtype: str
+        """
+        return self._id
+
+    @id.setter
+    def id(self, id: str):
+        """Sets the id of this DeploymentReport.
+
+        Identifier related to the optimization, can be used for visualizing runtime info in Tensorboard  # noqa: E501
+
+        :param id: The id of this DeploymentReport.
+        :type id: str
+        """
+
+        self._id = id
 
     @property
     def pareto_front_size(self) -> int:
