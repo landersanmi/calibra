@@ -115,6 +115,10 @@ html, .container-fluid{
     margin: 10px 5px;
 }
 
+#optimization_id_label{
+    padding-top: 7px;
+}
+
 #runtime_visualizer_redirect_btn {
     width: 210px !important;
 }

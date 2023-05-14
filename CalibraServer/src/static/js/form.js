@@ -3,6 +3,10 @@ $(document).ready(function(){
     var current_fs, next_fs, previous_fs;
     var opacity;
 
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     $(".next").click(function(){
         $("#progressbar li.active").next().addClass("active");
         current_fs = $(this).parent();
@@ -39,6 +43,7 @@ $(document).ready(function(){
         });
     });
 
+
     $("#next_btn_pipeline").prop("disabled", true);
     $("#next_btn_computing_infra").prop("disabled", true);
     $("#next_btn_network_infra").prop("disabled", true);
@@ -62,6 +67,44 @@ $(document).ready(function(){
     const timeValue = document.getElementById('time_value');
     timeSlider.addEventListener('input', (event) => {
       timeValue.textContent = event.target.value;
+    });
+
+    $("#optimize_btn").click(async function(){
+        let formData = new FormData();
+
+        formData.append('id', $('#optimization_id').val());
+        const pipeline_file = $('#upload_pipeline')[0].files[0];
+        formData.append('pipeline', pipeline_file);
+        const computing_infra_file = $('#upload_computing_infra')[0].files[0];
+        formData.append('computing_infra', computing_infra_file);
+        const network_infra_file = $('#upload_network_infra')[0].files[0];
+        formData.append('network_infra', network_infra_file);
+        formData.append('population_size', $('#population_range').val());
+        formData.append('generations_check', $('#generations_check').val());
+        formData.append('max_generations', $('#generations_range').val());
+        formData.append('time_check', $('#time_check').val());
+        formData.append('max_time', $('#time_range').val());
+        await sleep(1000); // For files loading
+
+        for (let pair of formData.entries()) {
+            console.log(pair[0]+ ': ' + pair[1]);
+        }
+
+        $.ajax({
+          url: '/optimize',
+          method: 'POST',
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function(response) {
+            console.log(response);
+            console.log("200")
+          },
+          error: function(error) {
+            console.log(error);
+            console.log("400")
+          }
+        });
     });
 
     // Add event listeners for the mouse wheel event
@@ -103,15 +146,10 @@ $(document).ready(function(){
       }
     });
 
-    console.clear();
     ('use strict');
-
     // Drag and drop - single or multiple image files
     // https://www.smashingmagazine.com/2018/01/drag-drop-file-uploader-vanilla-js/
     // https://codepen.io/joezimjs/pen/yPWQbd?editors=1000
-
-
-    'use strict';
 
     // Four objects of interest: drop zones, input elements, gallery elements, and the files.
      // dataRefs = {files: [image files], input: element ref, gallery: element ref}

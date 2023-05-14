@@ -3,9 +3,10 @@ import six
 
 from swagger_server.models.deployment_report import DeploymentReport  # noqa: E501
 from swagger_server import util
+from flask import request
 
-
-def post_optimization(id, pipeline, computing_infra, network_infra, population_size, generations_check, max_generations, time_check, max_time):  # noqa: E501
+#def post_optimization(id, pipeline, computing_infra, network_infra, population_size, generations_check, max_generations, time_check, max_time):  # noqa: E501
+def post_optimization():  # noqa: E501
     """Post optimization
 
     Upload three files and parameters to generate a deployment optimization report # noqa: E501
@@ -31,4 +32,8 @@ def post_optimization(id, pipeline, computing_infra, network_infra, population_s
 
     :rtype: DeploymentReport
     """
+    print(request.form)
+    print(request.files)
+    print(request.files['pipeline'].read())
+    print("Doing some magic")
     return 'do some magic!'
