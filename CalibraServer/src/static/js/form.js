@@ -73,6 +73,10 @@ $(document).ready(function(){
         let formData = new FormData();
 
         formData.append('id', $('#optimization_id').val());
+        $("#runtime_visualizer_redirect_btn").click(function(){
+            const url = "http://localhost:6006/?runFilter=" + $('#optimization_id').val() + "#timeseries";
+            window.open(url, "_blank");
+        });
         const pipeline_file = $('#upload_pipeline')[0].files[0];
         formData.append('pipeline', pipeline_file);
         const computing_infra_file = $('#upload_computing_infra')[0].files[0];
@@ -97,8 +101,8 @@ $(document).ready(function(){
           processData: false,
           contentType: false,
           success: function(response) {
-            console.log(response);
-            console.log("200")
+             window.location.href = '/report'
+             console.log("200")
           },
           error: function(error) {
             console.log(error);

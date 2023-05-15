@@ -13,3 +13,4 @@ tmp/plots/*
 logs/*
 .coverage
 coverage.xml
+GeneticDeployerServer/tensorboard_logs/*
