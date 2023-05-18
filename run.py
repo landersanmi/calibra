@@ -64,7 +64,7 @@ def compete(file_infrastructure: str, file_net_infrastructure: str, pipeline: st
     plot_front = InteractivePlot(title="Front Solutions Values - Normalized", axis_labels=OBJECTIVES_LABELS)
     plot_front.plot(front, label="", filename="tmp/plots/paretos/front_plot_normalized", normalize=True)
 
-    chord_plot.chord_diagram(o.get_front(), 'auto', obj_labels=OBJECTIVES_LABELS)
+    chord_plot.chord_diagram(o.get_front(), nbins='auto', obj_labels=OBJECTIVES_LABELS)
 
     print("Pareto Fronts values:")
     for solution in o.get_front():

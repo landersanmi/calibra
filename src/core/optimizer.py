@@ -119,7 +119,7 @@ class Optimizer:
             device_solutions.append(s.variables[0].variables)
             net_solutions.append(s.variables[1].variables)
 
-        for index in best_solutions:
+        for i, index in enumerate(best_solutions):
             device_names = Infrastructure(self.file_infrastructure).load().id.to_numpy()
             device_solution_df = pd.DataFrame(device_solutions[int(index)], columns=device_names)
             net_device_names = NetworkInfrastructure(self.file_net_infrastructure).load().id.to_numpy()
@@ -132,11 +132,16 @@ class Optimizer:
             fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(16, 9), dpi=90,
                                    gridspec_kw={'width_ratios': [len(models_indexes), len(net_device_names)]})
 
+            if i == 0:
+                fig.suptitle('All objectives deployment', fontsize=20)
+            else:
+                fig.suptitle('{} objective deployment'.format(OBJECTIVES_LABELS[i-1]), fontsize=20)
+
             ax[0].imshow(device_matrix, cmap='GnBu', interpolation='nearest')
             plt.sca(ax[0])
             plt.yticks(range(device_matrix.shape[0]), device_names, fontsize=8)
             plt.xticks(range(device_matrix.shape[1]), models_indexes, fontsize=8)  # , rotation=30)
-            plt.xlabel('Infra devices')
+            plt.ylabel('Computing devices')
             plt.xlabel('Pipeline Models')
             plt.title("Device Solution")
 
@@ -150,7 +155,7 @@ class Optimizer:
             plt.sca(ax[1])
             plt.yticks(range(net_matrix.shape[0]), device_names, fontsize=8)
             plt.xticks(range(net_matrix.shape[1]), net_device_names, fontsize=8)  # , rotation=30)
-            plt.xlabel('Infra devices')
+            plt.ylabel('Computing devices')
             plt.xlabel('Network Devices')
             plt.title("Network Solution")
 

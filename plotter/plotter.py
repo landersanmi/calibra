@@ -10,6 +10,7 @@ import os
 
 import matplotlib.pylab as pl
 import matplotlib.ticker as plticker
+import pandas as pd
 from mpl_toolkits.mplot3d import Axes3D
 from math import sqrt
 from matplotlib.colors import LinearSegmentedColormap
@@ -99,19 +100,26 @@ def fitness(objective: int, filename: str):
 def read_times(filename: str):
     if not os.path.isfile(filename):
         return
-    data = np.genfromtxt(filename, delimiter=",")
-
-    return data.mean(axis=1), data.std(axis=1)
+    data = pd.read_csv(filename, encoding='cp1252')
+    print(data.head())
+    means = []
+    stds = []
+    times = data['avg±std_constraints_time']
+    for time in times:
+        time_splits = time.split("±")
+        means.append(float(time_splits[0].strip()))
+        stds.append(float(time_splits[1].replace('s', ' ').strip()))
+    return means, stds
 
 
 def times():
 
-    means1, stds1 = read_times("/tmp/times1")
-    means2, stds2 = read_times("/tmp/times2")
-    means3, stds3 = read_times("/tmp/times3")
-
-    xlabels = ["5", "10", "20", "40", "80"]
-
+    means_big, stds_big = read_times("./tmp/data/testbed/testbed_big_mipc.csv")
+    means_small, stds_small = read_times("./tmp/data/testbed/testbed_small_mipc.csv")
+    means_small.append(0)
+    stds_small.append(0)
+    xlabels = pd.read_csv("./tmp/data/testbed/testbed_big_mipc.csv", encoding='cp1252')['pipeline']
+    print(xlabels)
     x = np.arange(len(xlabels))  # the label locations
     width = 0.3  # the width of the bars
 
@@ -119,34 +127,22 @@ def times():
     plt.rcParams["svg.fonttype"] = "none"
     rects1 = ax.bar(
         x - width,
-        means1,
+        means_big,
         width,
-        yerr=stds1,
-        label="Precision 3520",
-        align="center",
-        alpha=0.5,
-        ecolor="black",
-        capsize=10,
-        color="r",
-    )
-    rects2 = ax.bar(
-        x,
-        means2,
-        width,
-        yerr=stds2,
-        label="PowerEdge R440",
+        yerr=stds_big,
+        label="Big Infrastructure",
         align="center",
         alpha=0.5,
         ecolor="black",
         capsize=10,
         color="g",
     )
-    rects3 = ax.bar(
-        x + width,
-        means3,
+    rects2 = ax.bar(
+        x,
+        means_small,
         width,
-        yerr=stds3,
-        label="t3.2xlarge",
+        yerr=stds_small,
+        label="Small Infrastructure",
         align="center",
         alpha=0.5,
         ecolor="black",
@@ -162,12 +158,11 @@ def times():
     ax.yaxis.grid(True)
     ax.legend()
 
-    # ax.bar_label(rects1, padding=3)
-    # ax.bar_label(rects2, padding=3)
-
     # Save the figure and show
+    plt.yscale("log")
+    plt.title("Time to met constraints")
     plt.tight_layout()
-    plt.savefig(f"/tmp/times.svg")
+    plt.savefig(f"./tmp/plots/times/times.svg")
 
 
 def _memory():
