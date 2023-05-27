@@ -101,16 +101,15 @@ def post_optimization():  # noqa: E501
     pareto_front_size = len(o.get_front())
     total_time = int(o.termination_criterion.total_seconds)
     time_to_met_constraints = int(o.termination_criterion.seconds_to_met_constraints)
-    num_models = 0
-    num_computing_devices = 0
-    num_net_devices = 0
+    num_models = len(solutions[0].variables[0].variables)
+    num_computing_devices = len(solutions[0].variables[0].variables[0])
+    num_net_devices = len(solutions[0].variables[1].variables)
     report_date = str(datetime.datetime.now())
     best_solution = json.dumps(solutions[0], cls=CompositeSolutionEncoder)
     best_sol_performance_fitness = json.dumps(solutions[1], cls=CompositeSolutionEncoder)
     best_sol_cost_fitness = json.dumps(solutions[2], cls=CompositeSolutionEncoder)
     best_sol_net_cost_fitness = json.dumps(solutions[3], cls=CompositeSolutionEncoder)
     best_sol_net_fail_prob_fitness = json.dumps(solutions[4], cls=CompositeSolutionEncoder)
-    print(best_solution)
     population_size = optimization.population_size
     max_generations = optimization.max_generations
     max_time = optimization.max_time

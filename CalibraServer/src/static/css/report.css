@@ -1,0 +1,31 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html, .container-fluid{
+    height: 100vh;
+}
+
+/*Background color*/
+#grad1 {
+    background: radial-gradient(50% 113.13% at 50% 50%, #FF5000 0%, rgba(255, 80, 0, 0.60));
+}
+
+#calibra_img {
+    width:300px;
+    height: 100px;
+    padding-left: 3px;
+}
+
+.action-button {
+    width: 170px;
+    background: #FF8000;
+    font-weight: bold;
+    color: white;
+    border: 0 none;
+    border-radius: 0px;
+    cursor: pointer;
+    padding: 10px 5px;
+    margin: 25px 70px 0px 0px;
+}

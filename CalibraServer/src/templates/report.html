@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/report.css') }}" >
+{% endblock %}
+
+{% block js %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid" id="grad1">
+    <div class="row justify-content-center mt-0" style="height: 100%">
+        <div class="col-sm-12 col-md-12 col-lg-12 text-center" style="display:flex;align-items: center;">
+            <div class="card pt-2 mt-3 mb-3" style="margin: 0 auto;">
+                <div class="row" style="display: flex">
+                    <div class="col" id="title_col">
+                        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Calibra logo" id="calibra_img">
+                    </div>
+                    <div class="col">
+                        <p></p>
+                    </div>
+                    <div class = "col-sm-4 col-md-4 col-lg-4 justify-content-center">
+                        <input id="download_report" type="button" name="report" class="action-button" value="Download Report"/>
+                    </div>
+                </div>
+                 <div class="row justify-content-center pt-4">
+                    <div class="col-md-6 col-lg-6 col-sm-6 mx-0">
+                        <h1>Deployment report</h1>
+                        <table class="table">
+                            <tbody>
+                              <tr>
+                                  <td class="font-weight-bold"><strong>ID of optimization</strong></td>
+                                <td>{{ deployment_report.id }}</td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold"><strong>Report date</strong></td>
+                                <td>{{deployment_report.report_date}}</td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold"><strong>Number of models</strong></td>
+                                <td>{{deployment_report.num_models}}</td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold"><strong>Number of computing devices</strong></td>
+                                <td>{{deployment_report.num_computing_devices}}</td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold"><strong>Number of net devices</strong></td>
+                                <td>{{deployment_report.num_net_devices}}</td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold"><strong>Population size</strong></td>
+                                <td>{{deployment_report.population_size}} individuals</td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold"><strong>Max generations</strong></td>
+                                <td>{{deployment_report.max_generations}}</td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold"><strong>Max time</strong></td>
+                                <td>{{deployment_report.max_time}} seconds</td>
+                              <tr>
+                                <td class="font-weight-bold"><strong>Pareto front size</strong></td>
+                                <td>{{deployment_report.pareto_front_size}} solutions</td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold"><strong>Total time</strong></td>
+                                <td>{{deployment_report.total_time}} seconds</td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold"><strong>Time to met constraints</strong></td>
+                                <td>{{deployment_report.time_to_met_constraints}} seconds</td>
+                              </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                 </div>
+                 <div class="row pt-4 justify-content-center">
+                     <div class="col-md-11 col-lg-11 col-sm-11 mx-0">
+                         <h3 style="text-align: left !important;padding-left: 10px";>1. All objectives deployment:</h3>
+                           <table class="table">
+                            <thead class="thead-dark">
+                              <tr>
+                                <th scope="col">Models Performance</th>
+                                <th scope="col">Computing Cost</th>
+                                <th scope="col">Network Cost</th>
+                                <th scope="col">Network Failure Probability</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>{{deployment_report.model_perf_sol0}}</td>
+                                <td>{{deployment_report.comp_cost_sol0}}</td>
+                                <td>{{deployment_report.net_cost_sol0}}</td>
+                                <td>{{deployment_report.net_fail_sol0}}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                     </div>
+                     <div class="container">
+                         <img src="data:image/jpeg;base64,{{images.sol0_img}}" alt="Deployment solution for all objectives">
+                    </div>
+                 </div>
+                 <div class="row pt-4 justify-content-center">
+                     <div class="col-md-11 col-lg-11 col-sm-11 mx-0">
+                         <h3 style="text-align: left !important;padding-left: 10px";>2. Model performance deployment:</h3>
+                           <table class="table">
+                            <thead class="thead-dark">
+                              <tr>
+                                <th scope="col">Models Performance</th>
+                                <th scope="col">Computing Cost</th>
+                                <th scope="col">Network Cost</th>
+                                <th scope="col">Network Failure Probability</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>{{deployment_report.model_perf_sol1}}</td>
+                                <td>{{deployment_report.comp_cost_sol1}}</td>
+                                <td>{{deployment_report.net_cost_sol1}}</td>
+                                <td>{{deployment_report.net_fail_sol1}}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                     </div>
+                     <div class="container">
+                         <img src="data:image/jpeg;base64,{{images.sol1_img}}" alt="Model performance objective solution">
+                    </div>
+                 </div>
+                 <div class="row pt-4 justify-content-center">
+                     <div class="col-md-11 col-lg-11 col-sm-11 mx-0">
+                         <h3 style="text-align: left !important;padding-left: 10px";>3. Computing cost deployment:</h3>
+                           <table class="table">
+                            <thead class="thead-dark">
+                              <tr>
+                                <th scope="col">Models Performance</th>
+                                <th scope="col">Computing Cost</th>
+                                <th scope="col">Network Cost</th>
+                                <th scope="col">Network Failure Probability</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>{{deployment_report.model_perf_sol2}}</td>
+                                <td>{{deployment_report.comp_cost_sol2}}</td>
+                                <td>{{deployment_report.net_cost_sol2}}</td>
+                                <td>{{deployment_report.net_fail_sol2}}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                     </div>
+                     <div class="container">
+                         <img src="data:image/jpeg;base64,{{images.sol2_img}}" alt="Computing cost objective solution">
+                    </div>
+                 </div>
+                 <div class="row pt-4 justify-content-center">
+                     <div class="col-md-11 col-lg-11 col-sm-11 mx-0">
+                         <h3 style="text-align: left !important;padding-left: 10px";>4. Network cost deployment:</h3>
+                           <table class="table">
+                            <thead class="thead-dark">
+                              <tr>
+                                <th scope="col">Models Performance</th>
+                                <th scope="col">Computing Cost</th>
+                                <th scope="col">Network Cost</th>
+                                <th scope="col">Network Failure Probability</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>{{deployment_report.model_perf_sol3}}</td>
+                                <td>{{deployment_report.comp_cost_sol3}}</td>
+                                <td>{{deployment_report.net_cost_sol3}}</td>
+                                <td>{{deployment_report.net_fail_sol3}}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                     </div>
+                     <div class="container">
+                         <img src="data:image/jpeg;base64,{{images.sol3_img}}" alt="Network cost objective solution">
+                    </div>
+                 </div>
+                 <div class="row pt-4 justify-content-center">
+                     <div class="col-md-11 col-lg-11 col-sm-11 mx-0">
+                         <h3 style="text-align: left !important;padding-left: 10px";>5. Network failure deployment:</h3>
+                           <table class="table">
+                            <thead class="thead-dark">
+                              <tr>
+                                <th scope="col">Models Performance</th>
+                                <th scope="col">Computing Cost</th>
+                                <th scope="col">Network Cost</th>
+                                <th scope="col">Network Failure Probability</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>{{deployment_report.model_perf_sol4}}</td>
+                                <td>{{deployment_report.comp_cost_sol4}}</td>
+                                <td>{{deployment_report.net_cost_sol4}}</td>
+                                <td>{{deployment_report.net_fail_sol4}}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                     </div>
+                     <div class="container">
+                         <img src="data:image/jpeg;base64,{{images.sol4_img}}" alt="Network failure objective solution">
+                    </div>
+                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
