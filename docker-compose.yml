@@ -1,0 +1,38 @@
+version: '3'
+services:
+
+  calibra_server:
+    build: ./CalibraServer/
+    container_name: CalibraServer
+    volumes:
+      - calibra_server_volume:/usr/src/app
+    environment:
+      PYTHONUNBUFFERED: 1
+    ports:
+      - 7070:7070
+
+  genetic_deployer_server:
+    build: ./GeneticDeployerServer/
+    container_name: GeneticDeployerServer
+    volumes:
+      - genetic_server_volume:/usr/src/app
+    environment:
+      PYTHONUNBUFFERED: 1
+    ports:
+      - 8080:8080
+
+  tensorboar_server:
+    build: ./TensorbardServer/
+    container_name: TensorboardServer
+    volumes:
+      - genetic_server_volume:/usr/src/app
+    environment:
+      PYTHONUNBUFFERED: 1
+    ports:
+      - 6006:6006
+
+volumes:
+  calibra_server_volume:
+  genetic_server_volume:
+
+
