@@ -1,22 +1,21 @@
-import io
 import base64
 import time
-import threading
 import pandas as pd
 import numpy as np
 import requests
 import json
 import matplotlib.pyplot as plt
-import csv
-import tempfile
+import matplotlib
+matplotlib.use('Agg')
 import os
 
-from flask import redirect, render_template, url_for, session
+from flask import redirect, render_template, url_for, session, current_app
 from flask import request
-from io import BytesIO, StringIO
+from flask_executor import Executor
+from io import BytesIO
 from datetime import datetime
 
-IMAGE_DIRECTORY = './tmp'
+IMAGE_DIRECTORY = './src/tmp'
 IMAGE_LIFETIME = 20  #seconds
 
 
@@ -25,14 +24,14 @@ def index():
 
 
 def form_view():
-    return render_template('form.html')
+    error = request.args.get('error', False)
+    return render_template('form.html', error=error)
 
 
 def report_view():
     deployment_report = session.get('deployment_report')
     image_paths = session.get('image_paths')
 
-    print(deployment_report)
     images = {}
     for i, image_path in enumerate(image_paths):
         with open(image_path, 'rb') as f:
@@ -53,8 +52,9 @@ def optimize():
     max_generations = request.form['max_generations']
     time_check = request.form['time_check']
     max_time = request.form['max_time']
-    generations_check = True if generations_check == 'on' else False
-    time_check = True if time_check == 'on' else False
+
+    generations_check = True if generations_check == 'true' else False
+    time_check = True if time_check == 'true' else False
 
     data = {
         'id': run_id,
@@ -71,23 +71,25 @@ def optimize():
         'network_infra': (network_infra.filename, network_infra.read(), 'application/octet-stream')
     }
 
-    res = requests.post('http://127.0.0.1:8080/api/v1/optimize', data=data, files=files)
-    deployment_report = json.loads(res.content)
+    res = requests.post('http://GeneticDeployerServer:8080/api/v1/optimize', data=data, files=files)
+    if res.status_code == 500:
+        return res.status_code == 500
+    else:
+        deployment_report = json.loads(res.content)
+        final_deployment_report, figures = _generate_final_report_(deployment_report,
+                                                                   generations_check,
+                                                                   time_check,
+                                                                   request.files)
 
-    final_deployment_report, figures = _generate_final_report_(deployment_report,
-                                                               generations_check,
-                                                               time_check,
-                                                               request.files)
+        image_filenames = _save_images_(figures)
+        image_paths = [os.path.join(IMAGE_DIRECTORY, filename) for filename in image_filenames]
 
-    image_filenames = _save_images_(figures)
-    image_paths = [os.path.join(IMAGE_DIRECTORY, filename) for filename in image_filenames]
+        session['image_paths'] = image_paths
+        session['deployment_report'] = final_deployment_report
 
-    session['image_paths'] = image_paths
-    session['deployment_report'] = final_deployment_report
-
-    delete_thread = threading.Thread(target=_delete_images_after_delay_, args=(image_paths,))
-    delete_thread.start()
-    return redirect(url_for('blueprint.report_view'))
+        executor = Executor(current_app)
+        executor.submit(_delete_tmp_images_, image_paths)
+        return redirect(url_for('blueprint.report_view'))
 
 
 def _generate_final_report_(deployment_report, generations_check, time_check, request_files):
@@ -184,14 +186,6 @@ def _get_deployment_plot_(solution, request_files):
         for y in range(net_matrix.shape[1]):
             ax[1].annotate(str(net_matrix[x, y])[0], xy=(y, x),
                            horizontalalignment='center', verticalalignment='center')
-
-    """
-    # Save the plot to bytes
-    image_bytes = io.BytesIO()
-    plt.savefig(image_bytes, format='png')
-    plt.close()
-    encoded_image = base64.b64encode(image_bytes.getvalue()).decode('utf-8')
-    """
     return fig
 
 
@@ -207,14 +201,8 @@ def _save_images_(figures):
     return image_filenames
 
 
-def _delete_images_after_delay_(image_paths):
+def _delete_tmp_images_(image_paths):
     time.sleep(IMAGE_LIFETIME)
     for path in image_paths:
         if os.path.exists(path):
             os.remove(path)
-
-'''
-def log_visualizer(task_id):
-    # return redirect('localhost:6006:/#timeseries?runFilter={}'.format(task_id))
-    return "On progress"
-'''

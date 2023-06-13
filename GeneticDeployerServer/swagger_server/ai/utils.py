@@ -1,6 +1,5 @@
 import logging
 import numpy as np
-import os
 import json
 
 from jmetal.core.observer import Observer
@@ -31,8 +30,6 @@ class WriteObjectivesToTensorboardObserver(Observer):
 class CompositeSolutionEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, CompositeSolution):
-            print(type(obj.objectives))
-            print(type(obj.constraints))
             return {
                 'variables_0': obj.variables[0].variables.tolist(),
                 'variables_1': obj.variables[1].variables.tolist(),

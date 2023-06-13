@@ -84,9 +84,9 @@ $(document).ready(function(){
         const network_infra_file = $('#upload_network_infra')[0].files[0];
         formData.append('network_infra', network_infra_file);
         formData.append('population_size', $('#population_range').val());
-        formData.append('generations_check', $('#generations_check').val());
+        formData.append('generations_check', $('#generations_check').prop('checked'));
         formData.append('max_generations', $('#generations_range').val());
-        formData.append('time_check', $('#time_check').val());
+        formData.append('time_check', $('#time_check').prop('checked'));
         formData.append('max_time', $('#time_range').val());
         await sleep(1000); // For files loading
 
@@ -106,7 +106,9 @@ $(document).ready(function(){
           },
           error: function(error) {
             console.log(error);
-            console.log("400")
+            var redirectUrl = '/optimize_deployment?error=true';
+            window.location.href = redirectUrl;
+            console.log("Error:", error);
           }
         });
     });
@@ -322,6 +324,5 @@ $(document).ready(function(){
     previewFiles(dataRefs);
     fileUpload(dataRefs);
   }
-
 
 });

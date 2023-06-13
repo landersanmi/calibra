@@ -1,3 +1,9 @@
+@media print {
+  @page {
+    size: landscape;
+  }
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -10,12 +16,19 @@ html, .container-fluid{
 /*Background color*/
 #grad1 {
     background: radial-gradient(50% 113.13% at 50% 50%, #FF5000 0%, rgba(255, 80, 0, 0.60));
+    height: 100%;
+}
+
+#report_title{
+    font-size: 60px;
+    font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    margin-top: 35px;
 }
 
 #calibra_img {
-    width:300px;
-    height: 100px;
-    padding-left: 3px;
+    width:315px;
+    height: 105px;
+    padding-left: 25px;
 }
 
 .action-button {
@@ -27,5 +40,10 @@ html, .container-fluid{
     border-radius: 0px;
     cursor: pointer;
     padding: 10px 5px;
-    margin: 25px 70px 0px 0px;
+    margin: 33px 0px 0px 2vw;
+}
+
+#resume_table{
+    margin-top: 55px;
+    margin-bottom: 45px;
 }

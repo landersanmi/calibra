@@ -5,7 +5,6 @@ from flask import request
 
 from swagger_server.models.deployment_report import DeploymentReport  # noqa: E501
 from swagger_server.models.optimization import Optimization
-from swagger_server import util
 from swagger_server.ai.termination_criterions import (
     StoppingByConstraintsMet,
     StoppingByGenerationsAfterConstraintsMet,
@@ -53,13 +52,13 @@ def post_optimization():  # noqa: E501
     time_check = request.form['time_check']
     max_time = request.form['max_time']
 
-    if generations_check == 'false':
+    if generations_check == 'False':
         generations_check = False
-    elif generations_check == 'true':
+    elif generations_check == 'True':
         generations_check = True
-    if time_check == 'false':
+    if time_check == 'False':
         time_check = False
-    elif time_check == 'true':
+    elif time_check == 'True':
         time_check = True
 
     optimization = Optimization(id,
@@ -67,13 +66,14 @@ def post_optimization():  # noqa: E501
                                 computing_infra,
                                 network_infra,
                                 int(population_size),
-                                bool(generations_check),
+                                generations_check,
                                 int(max_generations),
-                                bool(time_check),
+                                time_check,
                                 int(max_time))
 
     tensorboard_logger = TensorboardLogger(algo_name=str(optimization.id), log_dir='tensorboard_logs')
     termination_criterion = StoppingByConstraintsMet(logger=tensorboard_logger)
+
     if optimization.generations_check and optimization.time_check:
         termination_criterion = StoppingByTimeOrGenerationsAfterConstraintsMet(max_seconds=optimization.max_time,
                                                                                max_generations=optimization.max_generations,
@@ -96,11 +96,17 @@ def post_optimization():  # noqa: E501
     o.run()
     best_solutions_ids = o.get_best_solution(include_fitness_specific=True)
     solutions = o.get_best_solution_values(best_solutions_ids)
+    for solution in solutions:
+        solution.objectives[0] = abs(solution.objectives[0])
 
-    id = optimization.id
+    optimization_id = optimization.id
     pareto_front_size = len(o.get_front())
     total_time = int(o.termination_criterion.total_seconds)
-    time_to_met_constraints = int(o.termination_criterion.seconds_to_met_constraints)
+    print(isinstance(termination_criterion, StoppingByConstraintsMet))
+    if isinstance(termination_criterion, StoppingByConstraintsMet):
+        time_to_met_constraints = total_time
+    else:
+        time_to_met_constraints = int(o.termination_criterion.seconds_to_met_constraints)
     num_models = len(solutions[0].variables[0].variables)
     num_computing_devices = len(solutions[0].variables[0].variables[0])
     num_net_devices = len(solutions[0].variables[1].variables)
@@ -114,7 +120,7 @@ def post_optimization():  # noqa: E501
     max_generations = optimization.max_generations
     max_time = optimization.max_time
 
-    result = DeploymentReport(id,
+    result = DeploymentReport(optimization_id,
                               pareto_front_size,
                               total_time,
                               time_to_met_constraints,

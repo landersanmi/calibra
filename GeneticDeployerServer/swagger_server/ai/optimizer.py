@@ -1,7 +1,6 @@
 import logging
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy import spatial
 
 from jmetal.algorithm.multiobjective.nsgaiii import NSGAIII, UniformReferenceDirectionFactory
@@ -12,10 +11,7 @@ from jmetal.util.solution import (
     print_variables_to_file,
     get_non_dominated_solutions,
 )
-from jmetal.util.comparator import StrengthAndKNNDistanceComparator, DominanceComparator
 
-from swagger_server.models.infrastructure import Infrastructure
-from swagger_server.models.network_infrastructure import NetworkInfrastructure
 from swagger_server.ai.mutation import PowerOffMutation
 from swagger_server.ai.crossover import PowerOffCrossover
 from swagger_server.ai.problem import DeploymentProblem
@@ -56,7 +52,6 @@ class Optimizer:
         self.algorithm = NSGAIII(
             problem=self.problem,
             population_size=self.population_size,
-            # offspring_population_size=self.population_size,
             reference_directions=UniformReferenceDirectionFactory(self.problem.number_of_objectives, n_points=92),
             crossover=PowerOffCrossover(probability=1.0),
             mutation=PowerOffMutation(problem=self.problem, probability=1.0),
@@ -73,8 +68,6 @@ class Optimizer:
             self.algorithm.observable.register(observer=self.observer)
 
         self.algorithm.run()
-
-        # self.front = get_non_dominated_solutions(self.algorithm.get_result())
         self.front = self.algorithm.get_result()
 
         logging.info(f"Computing time: ${self.algorithm.total_computing_time}")

@@ -11,6 +11,25 @@ html, .container-fluid{
 #grad1 {
     background: radial-gradient(50% 113.13% at 50% 50%, #FF5000 0%, rgba(255, 80, 0, 0.60));
 }
+#alert_container{
+    /*visibility: hidden;*/
+    position: absolute;
+    padding-top: 14px;
+    padding-bottom: 7px;
+    z-index: 0;
+}
+
+#alert_message{
+    margin-bottom: 0rem !important;
+    color:black;
+}
+
+#alert_div{
+    background-color: #FF9666;
+    border-bottom-color: white;
+    border-width: 0px;
+}
+
 
 /*form styles*/
 #msform {
@@ -326,3 +345,4 @@ html, .container-fluid{
   width: calc(33.333% - (2rem / 3));
   object-fit: contain;
 }
+

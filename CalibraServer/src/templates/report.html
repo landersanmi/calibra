@@ -5,28 +5,29 @@
 {% endblock %}
 
 {% block js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/report.js') }}"></script>
 {% endblock %}
 
 {% block content %}
 <div class="container-fluid" id="grad1">
     <div class="row justify-content-center mt-0" style="height: 100%">
         <div class="col-sm-12 col-md-12 col-lg-12 text-center" style="display:flex;align-items: center;">
-            <div class="card pt-2 mt-3 mb-3" style="margin: 0 auto;">
+            <div class="card pt-3 mt-4 mb-3" style="margin: 0 auto;">
                 <div class="row" style="display: flex">
-                    <div class="col" id="title_col">
+                    <div class="col-sm-3 col-md-2 col-lg-2" id="title_col">
                         <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Calibra logo" id="calibra_img">
                     </div>
-                    <div class="col">
-                        <p></p>
+                    <div class="col-sm-6 col-md-8 col-lg-8">
                     </div>
-                    <div class = "col-sm-4 col-md-4 col-lg-4 justify-content-center">
+                    <div class = "col-sm-3 col-md-2 col-lg-2">
                         <input id="download_report" type="button" name="report" class="action-button" value="Download Report"/>
                     </div>
                 </div>
                  <div class="row justify-content-center pt-4">
-                    <div class="col-md-6 col-lg-6 col-sm-6 mx-0">
-                        <h1>Deployment report</h1>
-                        <table class="table">
+                    <div class="col-md-4 col-lg-4 col-sm-4 mx-0">
+                        <h1 id="report_title">Deployment report</h1>
+                        <table class="table" id="resume_table">
                             <tbody>
                               <tr>
                                   <td class="font-weight-bold"><strong>ID of optimization</strong></td>
@@ -76,7 +77,7 @@
                     </div>
                  </div>
                  <div class="row pt-4 justify-content-center">
-                     <div class="col-md-11 col-lg-11 col-sm-11 mx-0">
+                     <div class="col-md-11 col-lg-11 col-sm-11 mx-0 mt-3">
                          <h3 style="text-align: left !important;padding-left: 10px";>1. All objectives deployment:</h3>
                            <table class="table">
                             <thead class="thead-dark">

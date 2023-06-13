@@ -5,7 +5,6 @@ import pandas as pd
 
 from swagger_server.ai.constants import CONSTRAINT_LABELS
 
-from jmetal.util.comparator import DominanceComparator
 from jmetal.util.termination_criterion import TerminationCriterion
 
 LOGGER = logging.getLogger("jmetal")
@@ -17,9 +16,10 @@ class StoppingByConstraintsMet(TerminationCriterion):
         self.constraints_met = False
         self.generations = 0
         self.tensorboard_logger = logger
+        self.total_seconds = 0
 
     def update(self, *args, **kwargs):
-        seconds = kwargs["COMPUTING_TIME"]
+        self.total_seconds = kwargs["COMPUTING_TIME"]
         c = np.array([s.constraints for s in kwargs["SOLUTIONS"]])
         df = pd.DataFrame(c, columns=CONSTRAINT_LABELS)
 
@@ -35,10 +35,9 @@ class StoppingByConstraintsMet(TerminationCriterion):
         if not uncompleted_constraint:
             self.constraints_met = True
 
-        log_msg = str(datetime.timedelta(seconds=seconds)) + " || "
+        log_msg = str(datetime.timedelta(seconds=self.total_seconds)) + " || "
         for size in constraints_sizes:
             log_msg += (size + '=' + str(constraints_sizes[size]) + ' | ')
-        print(log_msg)
         LOGGER.info(log_msg)
 
         del constraints_sizes['size total']
@@ -60,9 +59,11 @@ class StoppingByGenerationsAfterConstraintsMet(TerminationCriterion):
         self.generations_after_constraints = 0
         self.all_generations = 0
         self.tensorboard_logger = logger
+        self.total_seconds = 0
+        self.seconds_to_met_constraints = 0
 
     def update(self, *args, **kwargs):
-        seconds = kwargs["COMPUTING_TIME"]
+        self.total_seconds = kwargs["COMPUTING_TIME"]
         c = np.array([s.constraints for s in kwargs["SOLUTIONS"]])
         df = pd.DataFrame(c, columns=CONSTRAINT_LABELS)
 
@@ -79,13 +80,14 @@ class StoppingByGenerationsAfterConstraintsMet(TerminationCriterion):
             self.constraints_met = True
 
         if self.constraints_met:
+            if self.seconds_to_met_constraints == 0:
+                self.seconds_to_met_constraints = self.total_seconds
             self.generations_after_constraints += 1
             self.generations_met = (self.generations_after_constraints == self.generations)
         else:
-            log_msg = str(datetime.timedelta(seconds=seconds)) + " || "
+            log_msg = str(datetime.timedelta(seconds=self.total_seconds)) + " || "
             for size in constraints_sizes:
                 log_msg += (size + '=' + str(constraints_sizes[size]) + ' | ')
-            print(log_msg)
             LOGGER.info(log_msg)
 
         del constraints_sizes['size total']
@@ -136,7 +138,6 @@ class StoppingByTimeAfterConstraintsMet(TerminationCriterion):
             log_msg = str(datetime.timedelta(seconds=self.total_seconds)) + " || "
             for size in constraints_sizes:
                 log_msg += (size + '=' + str(constraints_sizes[size]) + ' | ')
-            print(log_msg)
             LOGGER.info(log_msg)
 
         del constraints_sizes['size total']
@@ -200,7 +201,6 @@ class StoppingByTimeOrGenerationsAfterConstraintsMet(TerminationCriterion):
             log_msg = str(datetime.timedelta(seconds=self.total_seconds)) + " || "
             for size in constraints_sizes:
                 log_msg += (size + '=' + str(constraints_sizes[size]) + ' | ')
-            print(log_msg)
             LOGGER.info(log_msg)
 
         del constraints_sizes['size total']
