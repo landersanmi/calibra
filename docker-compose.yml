@@ -21,9 +21,9 @@ services:
     ports:
       - 8080:8080
 
-  tensorboar_server:
-    build: ./TensorbardServer/
-    container_name: TensorboardServer
+  runtime_visualizer_server:
+    build: ./RuntimeVisualizerServer/
+    container_name: RuntimeVisualizerServer
     volumes:
       - genetic_server_volume:/usr/src/app
     environment:
