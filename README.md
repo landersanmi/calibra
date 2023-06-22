@@ -1,7 +1,7 @@
 ![cicd badge](https://github.com/landersanmi/TFM/actions/workflows/main_workflow.yml/badge.svg?event=push)
 ![codecov](https://codecov.io/gh/landersanmi/TFM/branch/main/graph/badge.svg?token=OW17NAF56S)
 
-# Calibra: Investigación y desarrollo de una herramienta IAOps para la planificación del despliegue de pipelines analíticos distribuidos
+# Calibra: investigación y desarrollo de una herramienta AIOps para la planificación del despliegue de pipelines analíticos distribuidos
 
 <div style="text-align: justify">
 Este proyecto consiste en la investigación y desarrollo de un sistema capaz de planificar el despliegue de pipelines 
@@ -15,7 +15,7 @@ computación y de red.
 </div>
 
 
-![demo.gif](demo.gif)
+![demo.gif](readme_files/demo.gif)
 [Video de demostración en buena calidad](https://drive.google.com/file/d/1Ohp1PAbcnZkmtzKsVWGKfZAcz2_mXuN7/preview)
 
 ## 1. Como ejecutar Calibra
@@ -48,4 +48,13 @@ tensorboard --logdir logs
 ## 2. Ficheros de ejemplo
 La estructura que deben seguir los ficheros facilitados a la herramienta deben seguir el mismo formato que los ficheros 
 ubicados dentro del directorio `src/resources` del proyecto.
+
+
+## 3. Arquitectura de alto nivel de los componentes
+![HighLevelArchitecture](readme_files/arqui1.jpg)
+
+
+## 4. Arquitectura de los microservicios web
+![MicroservicesArchitecture](readme_files/arqui2.jpg)
+
 
