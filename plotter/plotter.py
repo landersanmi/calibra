@@ -10,48 +10,12 @@ import os
 
 import matplotlib.pylab as pl
 import matplotlib.ticker as plticker
+import matplotlib.colors as mcolors
+
 import pandas as pd
 from mpl_toolkits.mplot3d import Axes3D
 from math import sqrt
 from matplotlib.colors import LinearSegmentedColormap
-
-def pareto2():
-    filename = "/tmp/pareto"
-    if not os.path.isfile(filename):
-        return
-
-    data = np.genfromtxt(filename, delimiter=",")
-
-    fig = plt.figure(figsize=(9.6, 7.2))
-    plt.rcParams["svg.fonttype"] = "none"
-    # fig = plt.figure()
-    ax = fig.add_subplot(111, projection="3d")
-
-    xs = data[:, 0]
-    # print(xs.max(), xs.min())
-    ys = data[:, 1]
-    # print(ys.max(), ys.min())
-    zs = data[:, 2]
-    # print(zs.max(), zs.min())
-    ax.scatter(xs, ys, zs, marker="o")
-
-    # plot the shadows
-    # ax.plot(xs, zs, 'r+', zdir='y', zs=30000)
-    # ax.plot(ys, zs, 'g+', zdir='x', zs=2300)
-    # ax.plot(xs, ys, 'k+', zdir='z', zs=18.0)
-
-    # define limits
-    # ax.set_xlim([2300, 2600])
-    # ax.set_ylim([20000, 30000])
-    # ax.set_zlim([18.0, 18.21])
-
-    ax.set_xlabel("Resilience")
-    ax.set_ylabel("Performance")
-    ax.set_zlabel("Cost")
-
-    ax.view_init(elev=24, azim=-57)
-    # plt.show()
-    plt.savefig(f"/tmp/pareto.svg")
 
 
 def fitness(objective: int, filename: str):
@@ -65,31 +29,16 @@ def fitness(objective: int, filename: str):
         return
 
     data = np.genfromtxt(file, delimiter=",")
-
-    #ylabel = ["Resilience", "Model Performance", "Cost", "Network Performance", "Net Cost", "Net Fail Prob"]
-    # color = ["red", "green", "blue", "yellow"]
-    #color = ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#9b19f5", "#ffa300"]
-
     ylabel = LABELS[:]
     color = COLORS[:]
 
-
     plt.figure()
-    # from matplotlib import rcParams
-    # import matplotlib.font_manager as fm
-    # fm._rebuild()
-    #hfont = {"fontname": "Courier"}
     plt.rcParams["svg.fonttype"] = "none"
-    # plt.rcParams['font.family'] = 'serif'
-    # plt.rcParams["font.fontname"] = "Courier"
-    # rcParams['font.sans-serif'] = ['Tahoma']
+
     plt.plot(data[:, objective], color=color[objective])
     plt.ylabel(ylabel=ylabel[objective])
     #plt.xlabel("Number of generations", **hfont)
     plt.xlabel("Number of generations")
-
-    # red_patch = mpatches.Patch(color='red', label='The red data')
-    # plt.legend(handles=[red_patch], loc='upper left')
 
     # plt.show()
     plt.grid(True)
@@ -97,14 +46,16 @@ def fitness(objective: int, filename: str):
     plt.savefig(f"tmp/plots/fitnesses/Fitness({ylabel[objective]})[{filename}].svg")
 
 
-def read_times(filename: str):
+def read_times(filename: str, only_constraints: bool):
     if not os.path.isfile(filename):
         return
     data = pd.read_csv(filename, encoding='cp1252')
-    print(data.head())
     means = []
     stds = []
-    times = data['avg±std_constraints_time']
+    if only_constraints:
+        times = data['avg±std_constraints_time']
+    else:
+        times = data['avg±std_optimization_time']
     for time in times:
         time_splits = time.split("±")
         means.append(float(time_splits[0].strip()))
@@ -113,54 +64,101 @@ def read_times(filename: str):
 
 
 def times():
+    constraints_means_big, constraints_stds_big = read_times("./tmp/data/testbed/testbed_big_mipc.csv", True)
+    constraints_means_small, constraints_stds_small = read_times("./tmp/data/testbed/testbed_small_mipc.csv", True)
+    constraints_means_small.append(0)
+    constraints_stds_small.append(0)
 
-    means_big, stds_big = read_times("./tmp/data/testbed/testbed_big_mipc.csv")
-    means_small, stds_small = read_times("./tmp/data/testbed/testbed_small_mipc.csv")
-    means_small.append(0)
-    stds_small.append(0)
+    optimization_means_big, optimization_stds_big = read_times("./tmp/data/testbed/testbed_big_mipc.csv", False)
+    optimization_means_small, optimization_stds_small = read_times("./tmp/data/testbed/testbed_small_mipc.csv", False)
+    optimization_means_small.append(0)
+    optimization_stds_small.append(0)
+
     xlabels = pd.read_csv("./tmp/data/testbed/testbed_big_mipc.csv", encoding='cp1252')['pipeline']
-    print(xlabels)
-    x = np.arange(len(xlabels))  # the label locations
-    width = 0.3  # the width of the bars
+    x = np.arange(len(xlabels))
+    width = 0.15
 
     fig, ax = plt.subplots(figsize=(10, 6))
     plt.rcParams["svg.fonttype"] = "none"
-    rects1 = ax.bar(
-        x - width,
-        means_big,
+    ax.bar(
+        x - 1.6*width,
+        constraints_means_big,
         width,
-        yerr=stds_big,
-        label="Big Infrastructure",
+        yerr=constraints_stds_big,
+        label="Constraints - Big Infrastructure",
         align="center",
         alpha=0.5,
         ecolor="black",
         capsize=10,
-        color="g",
+        color="lime",
     )
-    rects2 = ax.bar(
-        x,
-        means_small,
+    ax.bar(
+        x - 0.6*width,
+        constraints_means_small,
         width,
-        yerr=stds_small,
-        label="Small Infrastructure",
+        yerr=constraints_stds_small,
+        label="Constraints - Small Infrastructure",
         align="center",
         alpha=0.5,
         ecolor="black",
         capsize=10,
-        color="b",
+        color="deepskyblue",
     )
 
-    # Add some text for labels, title and custom x-axis tick labels, etc.
+    ax.bar(
+        x + 0.6*width,
+        optimization_means_big,
+        width,
+        yerr=optimization_stds_big,
+        label="Optimization - Big Infrastructure",
+        align="center",
+        alpha=0.5,
+        ecolor="black",
+        capsize=10,
+        color="darkgreen",
+    )
+    ax.bar(
+        x + 1.6*width,
+        optimization_means_small,
+        width,
+        yerr=optimization_stds_small,
+        label="Optimization - Small Infrastructure",
+        align="center",
+        alpha=0.5,
+        ecolor="black",
+        capsize=10,
+        color="blue",
+    )
+
     ax.set_ylabel("Execution time (s)")
-    ax.set_xlabel("Number of models in the pipeline")
-    ax.set_xticks(x)
-    ax.set_xticklabels(xlabels)
+    ax.set_xticks([])
     ax.yaxis.grid(True)
     ax.legend()
 
+    constraints_times_big = np.array([str(x) + ' ± ' + str(y) + ' s' for x, y in zip(constraints_means_big, constraints_stds_big)])
+    constraints_times_small = np.array([str(x) + ' ± ' + str(y) + ' s' for x, y in zip(constraints_means_small, constraints_stds_small)])
+    optimization_times_big = np.array([str(x) + ' ± ' + str(y) + ' s' for x, y in zip(optimization_means_big, optimization_stds_big)])
+    optimization_times_small = np.array([str(x) + ' ± ' + str(y) + ' s' for x, y in zip(optimization_means_small, optimization_stds_small)])
+
+    constraints_times_small[-1] = "-"
+    optimization_times_small[-1] = "-"
+
+    # Create the table
+    table_data = [xlabels, constraints_times_big, constraints_times_small, optimization_times_big, optimization_times_small]
+    alpha_value = 0.5
+    cell_colors = [['white', 'white', 'white', 'white', 'white', 'white'],
+                   ['lime', 'lime', 'lime', 'lime', 'lime', 'lime'],
+                   ['deepskyblue', 'deepskyblue', 'deepskyblue', 'deepskyblue', 'deepskyblue', 'deepskyblue'],
+                   ['darkgreen', 'darkgreen', 'darkgreen', 'darkgreen', 'darkgreen', 'darkgreen'],
+                   ['blue', 'blue', 'blue', 'blue', 'blue', 'blue']]
+    alpha_colors = [[mcolors.to_rgba(color, alpha=alpha_value) for color in row] for row in cell_colors]
+    table = plt.table(cellText=table_data, cellLoc='center', cellColours=alpha_colors, loc='bottom', colLoc='center')
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
+
     # Save the figure and show
     plt.yscale("log")
-    plt.title("Time to met constraints")
+    plt.title("Optimization times")
     plt.tight_layout()
     plt.savefig(f"./tmp/plots/times/times.svg")
 
@@ -328,8 +326,6 @@ def main():
 
     if args.times:
         times()
-
-    # memory()
 
     plt.show()
 
